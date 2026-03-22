@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>購課成功！歡迎加入東區德學院</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #F2A900;
+    --gold-light: #FFF3D6;
+    --dark: #1A1A2E;
+    --dark2: #16213E;
+    --white: #FFFFFF;
+    --gray: #A0A0B0;
+    --green: #2ECC71;
+    --red: #E74C3C;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--dark);
+    color: var(--white);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
+
+  /* ===== SUCCESS BADGE ===== */
+  .success-badge {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .success-badge .checkmark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-bottom: 16px;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .success-badge .checkmark svg {
+    width: 36px;
+    height: 36px;
+    fill: none;
+    stroke: var(--white);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .success-badge h1 {
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  .success-badge p {
+    font-size: 16px;
+    color: var(--gray);
+  }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(242,169,0,0.3), transparent);
+    margin: 32px 0;
+  }
+
+  /* ===== UPSELL SECTION ===== */
+  .upsell-section {
+    background: var(--dark2);
+    border: 1px solid rgba(242,169,0,0.2);
+    border-radius: 16px;
+    padding: 32px 24px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .upsell-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), #FF6B35);
+  }
+
+  .upsell-tag {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--dark);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  .upsell-section h2 {
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+
+  .upsell-section h2 span {
+    color: var(--gold);
+  }
+
+  .upsell-text {
+    font-size: 15px;
+    color: #D0D0E0;
+    margin-bottom: 16px;
+  }
+
+  .upsell-text strong {
+    color: var(--white);
+  }
+
+  /* ===== QUOTE BOX ===== */
+  .quote-box {
+    background: rgba(242, 169, 0, 0.08);
+    border-left: 3px solid var(--gold);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .quote-box p {
+    font-size: 14px;
+    color: #D0D0E0;
+    font-style: italic;
+  }
+
+  .quote-box .author {
+    font-size: 13px;
+    color: var(--gold);
+    font-style: normal;
+    margin-top: 8px;
+  }
+
+  /* ===== COURSE CARD ===== */
+  .course-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+  }
+
+  .course-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .course-info {
+    font-size: 14px;
+    color: var(--gray);
+    margin-bottom: 8px;
+  }
+
+  .course-info strong {
+    color: var(--white);
+  }
+
+  .price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+  }
+
+  .price-original {
+    font-size: 16px;
+    color: var(--gray);
+    text-decoration: line-through;
+  }
+
+  .price-current {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  .discount-note {
+    font-size: 13px;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+
+  .seats-left {
+    display: inline-block;
+    background: rgba(231, 76, 60, 0.15);
+    color: var(--red);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+
+  /* ===== CTA BUTTON ===== */
+  .cta-btn {
+    display: block;
+    width: 100%;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, var(--gold), #FF8C00);
+    color: var(--dark);
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(242, 169, 0, 0.3);
+  }
+
+  /* ===== GUARANTEE ===== */
+  .guarantee {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 16px;
+    background: rgba(46, 204, 113, 0.08);
+    border-radius: 8px;
+  }
+
+  .guarantee-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    color: var(--green);
+  }
+
+  .guarantee p {
+    font-size: 13px;
+    color: #A0D0B0;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .footer p {
+    font-size: 13px;
+    color: var(--gray);
+  }
+
+  .footer a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes fadeUp {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  .fade-up {
+    animation: fadeUp 0.6s ease-out forwards;
+    opacity: 0;
+  }
+
+  .fade-up-d1 { animation-delay: 0.1s; }
+  .fade-up-d2 { animation-delay: 0.2s; }
+  .fade-up-d3 { animation-delay: 0.4s; }
+  .fade-up-d4 { animation-delay: 0.6s; }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 480px) {
+    .container { padding: 32px 16px 48px; }
+    .success-badge h1 { font-size: 24px; }
+    .upsell-section { padding: 24px 18px; }
+    .upsell-section h2 { font-size: 20px; }
+    .price-current { font-size: 24px; }
+    .cta-btn { font-size: 16px; padding: 16px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- SUCCESS BADGE -->
+  <div class="success-badge fade-up">
+    <div class="checkmark">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <h1>購課成功！</h1>
+    <p>課程已經開通，你可以馬上開始觀看。</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- UPSELL SECTION -->
+  <div class="upsell-section fade-up fade-up-d1">
+    <div class="upsell-tag">線上課學員專屬</div>
+
+    <h2>線上課讓你「懂」<br><span>實體課讓你「做到」</span></h2>
+
+    <p class="upsell-text">
+      你的眼神、語調、肢體的放鬆程度，<br>
+      這些「沒說出口的東西」，對方全部都在讀。
+    </p>
+
+    <p class="upsell-text">
+      <strong>這些東西，看影片練不到。</strong><br>
+      它需要在真實的互動壓力下被反覆訓練，<br>
+      直到變成你的本能反應。
+    </p>
+
+    <p class="upsell-text">
+      即興實體課就是做這件事的。<br>
+      我會親自帶你把即興反應<strong>刻進肌肉記憶</strong>。
+    </p>
+  </div>
+
+  <!-- STUDENT QUOTES -->
+  <div class="quote-box fade-up fade-up-d2">
+    <p>「運用即興心法，我從認識一個心儀的人到深深地擁抱她，只花了十五分鐘。」</p>
+    <div class="author">— A19 期學員 Teddy｜音樂製作人</div>
+  </div>
+
+  <div class="quote-box fade-up fade-up-d2" style="margin-top: 16px;">
+    <p>「隔天跟別人的對話、反應，馬上就收穫了許多笑聲！忍不住又報了 Level B！」</p>
+    <div class="author">— A21 期學員 呂紹瑀</div>
+  </div>
+
+  <!-- COURSE CARD -->
+  <div class="course-card fade-up fade-up-d3">
+    <h3>東區德即興表達工作坊 Level A</h3>
+    <p class="course-info">📅 <strong>5/30 (六) - 5/31 (日)</strong>｜10:00-17:00</p>
+    <p class="course-info">📍 台北中山站旁｜兩天共 12 小時實戰訓練</p>
+    <p class="course-info">👥 嚴格限額 <strong>10 人</strong>｜教練親自指導</p>
+
+    <div class="seats-left">⚡ 名額有限，額滿系統自動關閉</div>
+
+    <div class="price-row">
+      <span class="price-original">NT$8,600</span>
+      <span class="price-current">NT$6,600</span>
+    </div>
+    <p class="discount-note">✦ 早鳥價 + 線上課學員專屬折扣碼 <strong>improvdate1000</strong>，現省 $2,000（每人限用一次）</p>
+
+    <!-- ★ 將下方連結替換為你的實體課報名頁面 URL ★ -->
+    <a href="https://dio3212.kaik.io/courses/improvlevela?utm_source=thankyou&utm_medium=upsell&utm_campaign=online_course_buyer" class="cta-btn">
+      立即報名即興實體課 →
+    </a>
+
+    <div class="guarantee">
+      <svg class="guarantee-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+      <p>零風險保證：開課 72 小時前，任何原因可全額退費。當天有事可免費保留到下一期補課。</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer fade-up fade-up-d4">
+    <p>有任何問題歡迎來信 <a href="mailto:dio3212@gmail.com">dio3212@gmail.com</a></p>
+    <p style="margin-top: 8px;">&copy; 2026 東區德學院</p>
+  </div>
+
+</div>
+
+</body>
+</html>
