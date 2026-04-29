@@ -282,6 +282,69 @@
     text-decoration: none;
   }
 
+  /* ===== SURVEY ===== */
+  .survey-section {
+    background: linear-gradient(135deg, rgba(242,169,0,0.06), rgba(255,140,0,0.04));
+    border: 1px solid rgba(242,169,0,0.25);
+    border-radius: 14px;
+    padding: 24px 22px;
+    margin-bottom: 32px;
+  }
+  .survey-section h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--white);
+  }
+  .survey-section .survey-sub {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 18px;
+  }
+  .survey-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .survey-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .survey-btn:hover {
+    background: rgba(242,169,0,0.12);
+    border-color: var(--gold);
+    transform: translateY(-1px);
+  }
+  .survey-btn:disabled {
+    cursor: default;
+    opacity: 0.3;
+    transform: none;
+  }
+  .survey-btn .icon {
+    font-size: 18px;
+  }
+  .survey-thanks {
+    text-align: center;
+    padding: 20px 0;
+    color: var(--gold);
+    font-size: 16px;
+    font-weight: 600;
+    display: none;
+  }
+  .survey-thanks.show { display: block; }
+
   /* ===== ANIMATIONS ===== */
   @keyframes popIn {
     0% { transform: scale(0); opacity: 0; }
@@ -329,6 +392,27 @@
 
   <div class="divider"></div>
 
+  <!-- SURVEY -->
+  <div class="survey-section fade-up fade-up-d1" id="surveyBox">
+    <h3>幫我一個忙｜你怎麼知道東區德的？</h3>
+    <p class="survey-sub">點一下就好。你的答案幫我把廣告錢花在對的地方。</p>
+    <div class="survey-grid" id="surveyGrid">
+      <button class="survey-btn" data-answer="Threads"><span class="icon">🧵</span>Threads</button>
+      <button class="survey-btn" data-answer="YouTube"><span class="icon">🎬</span>YouTube</button>
+      <button class="survey-btn" data-answer="Instagram"><span class="icon">📷</span>Instagram</button>
+      <button class="survey-btn" data-answer="Facebook"><span class="icon">📘</span>Facebook</button>
+      <button class="survey-btn" data-answer="Email 電子報"><span class="icon">📧</span>Email 電子報</button>
+      <button class="survey-btn" data-answer="Meta 廣告"><span class="icon">💰</span>Meta 廣告</button>
+      <button class="survey-btn" data-answer="朋友介紹"><span class="icon">👥</span>朋友介紹</button>
+      <button class="survey-btn" data-answer="Podcast / 媒體"><span class="icon">🎙️</span>Podcast / 媒體</button>
+      <button class="survey-btn" data-answer="Google 搜尋"><span class="icon">🔍</span>Google 搜尋</button>
+      <button class="survey-btn" data-answer="其他"><span class="icon">✨</span>其他</button>
+    </div>
+    <div class="survey-thanks" id="surveyThanks">
+      謝謝你 🙏 你的答案幫了大忙
+    </div>
+  </div>
+
   <!-- UPSELL SECTION -->
   <div class="upsell-section fade-up fade-up-d1">
     <div class="upsell-tag">線上課學員專屬</div>
@@ -352,15 +436,10 @@
     </p>
   </div>
 
-  <!-- STUDENT QUOTES -->
+  <!-- STUDENT QUOTE -->
   <div class="quote-box fade-up fade-up-d2">
-    <p>「運用即興心法，我從認識一個心儀的人到深深地擁抱她，只花了十五分鐘。」</p>
-    <div class="author">— A19 期學員 Teddy｜音樂製作人</div>
-  </div>
-
-  <div class="quote-box fade-up fade-up-d2" style="margin-top: 16px;">
-    <p>「隔天跟別人的對話、反應，馬上就收穫了許多笑聲！忍不住又報了 Level B！」</p>
-    <div class="author">— A21 期學員 呂紹瑀</div>
+    <p>「隔天跟別人的對話、反應，馬上就收穫了許多笑聲！忍不住又報了 Level B 的課！」</p>
+    <div class="author">— 學員 呂紹瑀</div>
   </div>
 
   <!-- COURSE CARD -->
@@ -374,12 +453,12 @@
 
     <div class="price-row">
       <span class="price-original">NT$9,600</span>
-      <span class="price-current">NT$7,600</span>
+      <span class="price-current">NT$6,600</span>
     </div>
-    <p class="discount-note">✦ 早鳥價 + 線上課學員專屬折扣碼 <strong>improvdate1000</strong>，現省 $2,000（每人限用一次）</p>
+    <p class="discount-note">✦ 線上課學員輸入折扣碼 <strong>Letsimprov</strong> 可再折 $500</p>
 
     <!-- ★ 將下方連結替換為你的實體課報名頁面 URL ★ -->
-    <a href="https://dio3212.kaik.io/courses/improvlevela?utm_source=thankyou&utm_medium=upsell&utm_campaign=online_course_buyer" class="cta-btn">
+    <a href="https://dio3212.kaik.io/courses/improvlevela" class="cta-btn">
       立即報名即興實體課 →
     </a>
 
@@ -394,10 +473,58 @@
   <!-- FOOTER -->
   <div class="footer fade-up fade-up-d4">
     <p>有任何問題歡迎來信 <a href="mailto:dio3212@gmail.com">dio3212@gmail.com</a></p>
-    <p style="margin-top: 8px;">&copy; 2026 東區德學院</p>
+    <p style="margin-top: 8px;">© 2026 東區德學院</p>
   </div>
 
 </div>
+
+<script>
+// ===== 客戶歸戶問卷 =====
+// 部署後把下面 SURVEY_ENDPOINT 替換成你的 Apps Script Web App URL
+const SURVEY_ENDPOINT = "REPLACE_WITH_YOUR_APPS_SCRIPT_URL";
+
+document.querySelectorAll('.survey-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const answer = btn.dataset.answer;
+    document.querySelectorAll('.survey-btn').forEach(b => b.disabled = true);
+    btn.style.background = 'var(--gold)';
+    btn.style.color = 'var(--dark)';
+    btn.style.borderColor = 'var(--gold)';
+
+    // 收集 URL params (Teachify 可能傳 ?email=, ?order_id= 等)
+    const urlParams = Object.fromEntries(new URLSearchParams(window.location.search));
+    const payload = {
+      answer,
+      url_params: urlParams,
+      referrer: document.referrer || '',
+      user_agent: navigator.userAgent,
+      page: 'thank-you-online-course',
+      timestamp: new Date().toISOString(),
+    };
+
+    if (SURVEY_ENDPOINT && !SURVEY_ENDPOINT.startsWith('REPLACE')) {
+      try {
+        await fetch(SURVEY_ENDPOINT, {
+          method: 'POST',
+          mode: 'no-cors',  // Apps Script 端用 no-cors 避免 preflight
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload),
+        });
+      } catch (e) {
+        console.warn('survey submit failed', e);
+      }
+    } else {
+      console.log('SURVEY_ENDPOINT not set, would submit:', payload);
+    }
+
+    // 顯示謝謝
+    setTimeout(() => {
+      document.getElementById('surveyGrid').style.display = 'none';
+      document.getElementById('surveyThanks').classList.add('show');
+    }, 600);
+  });
+});
+</script>
 
 </body>
 </html>
