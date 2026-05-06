@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>購課成功！歡迎加入東區德學院</title>
+<title>報名成功！歡迎加入即興表達課</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
@@ -73,213 +73,37 @@
     color: var(--gray);
   }
 
+  /* ===== INFO BOX ===== */
+  .info-box {
+    background: var(--dark2);
+    border: 1px solid rgba(242,169,0,0.2);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 28px;
+  }
+
+  .info-box h3 {
+    font-size: 16px;
+    color: var(--gold);
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+
+  .info-box p {
+    font-size: 14px;
+    color: #D0D0E0;
+    margin-bottom: 8px;
+  }
+
+  .info-box p strong {
+    color: var(--white);
+  }
+
   /* ===== DIVIDER ===== */
   .divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(242,169,0,0.3), transparent);
     margin: 32px 0;
-  }
-
-  /* ===== UPSELL SECTION ===== */
-  .upsell-section {
-    background: var(--dark2);
-    border: 1px solid rgba(242,169,0,0.2);
-    border-radius: 16px;
-    padding: 32px 24px;
-    margin-bottom: 32px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .upsell-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--gold), #FF6B35);
-  }
-
-  .upsell-tag {
-    display: inline-block;
-    background: var(--gold);
-    color: var(--dark);
-    font-size: 13px;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 4px;
-    margin-bottom: 16px;
-    letter-spacing: 0.5px;
-  }
-
-  .upsell-section h2 {
-    font-size: 22px;
-    font-weight: 900;
-    margin-bottom: 20px;
-    line-height: 1.4;
-  }
-
-  .upsell-section h2 span {
-    color: var(--gold);
-  }
-
-  .upsell-text {
-    font-size: 15px;
-    color: #D0D0E0;
-    margin-bottom: 16px;
-  }
-
-  .upsell-text strong {
-    color: var(--white);
-  }
-
-  /* ===== QUOTE BOX ===== */
-  .quote-box {
-    background: rgba(242, 169, 0, 0.08);
-    border-left: 3px solid var(--gold);
-    padding: 16px 20px;
-    margin: 24px 0;
-    border-radius: 0 8px 8px 0;
-  }
-
-  .quote-box p {
-    font-size: 14px;
-    color: #D0D0E0;
-    font-style: italic;
-  }
-
-  .quote-box .author {
-    font-size: 13px;
-    color: var(--gold);
-    font-style: normal;
-    margin-top: 8px;
-  }
-
-  /* ===== COURSE CARD ===== */
-  .course-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 24px;
-    margin: 24px 0;
-  }
-
-  .course-card h3 {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 12px;
-  }
-
-  .course-info {
-    font-size: 14px;
-    color: var(--gray);
-    margin-bottom: 8px;
-  }
-
-  .course-info strong {
-    color: var(--white);
-  }
-
-  .price-row {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-top: 16px;
-    margin-bottom: 8px;
-  }
-
-  .price-original {
-    font-size: 16px;
-    color: var(--gray);
-    text-decoration: line-through;
-  }
-
-  .price-current {
-    font-size: 28px;
-    font-weight: 900;
-    color: var(--gold);
-  }
-
-  .discount-note {
-    font-size: 13px;
-    color: var(--green);
-    margin-bottom: 16px;
-  }
-
-  .seats-left {
-    display: inline-block;
-    background: rgba(231, 76, 60, 0.15);
-    color: var(--red);
-    font-size: 13px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-  }
-
-  /* ===== CTA BUTTON ===== */
-  .cta-btn {
-    display: block;
-    width: 100%;
-    padding: 18px 24px;
-    background: linear-gradient(135deg, var(--gold), #FF8C00);
-    color: var(--dark);
-    font-size: 18px;
-    font-weight: 900;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    letter-spacing: 0.5px;
-  }
-
-  .cta-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(242, 169, 0, 0.3);
-  }
-
-  /* ===== GUARANTEE ===== */
-  .guarantee {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-top: 20px;
-    padding: 16px;
-    background: rgba(46, 204, 113, 0.08);
-    border-radius: 8px;
-  }
-
-  .guarantee-icon {
-    flex-shrink: 0;
-    width: 24px;
-    height: 24px;
-    color: var(--green);
-  }
-
-  .guarantee p {
-    font-size: 13px;
-    color: #A0D0B0;
-  }
-
-  /* ===== FOOTER ===== */
-  .footer {
-    text-align: center;
-    margin-top: 40px;
-    padding-top: 24px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-  }
-
-  .footer p {
-    font-size: 13px;
-    color: var(--gray);
-  }
-
-  .footer a {
-    color: var(--gold);
-    text-decoration: none;
   }
 
   /* ===== SURVEY ===== */
@@ -345,6 +169,24 @@
   }
   .survey-thanks.show { display: block; }
 
+  /* ===== FOOTER ===== */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .footer p {
+    font-size: 13px;
+    color: var(--gray);
+  }
+
+  .footer a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
   /* ===== ANIMATIONS ===== */
   @keyframes popIn {
     0% { transform: scale(0); opacity: 0; }
@@ -364,16 +206,12 @@
   .fade-up-d1 { animation-delay: 0.1s; }
   .fade-up-d2 { animation-delay: 0.2s; }
   .fade-up-d3 { animation-delay: 0.4s; }
-  .fade-up-d4 { animation-delay: 0.6s; }
 
   /* ===== MOBILE ===== */
   @media (max-width: 480px) {
     .container { padding: 32px 16px 48px; }
     .success-badge h1 { font-size: 24px; }
-    .upsell-section { padding: 24px 18px; }
-    .upsell-section h2 { font-size: 20px; }
-    .price-current { font-size: 24px; }
-    .cta-btn { font-size: 16px; padding: 16px 20px; }
+    .info-box { padding: 20px 18px; }
   }
 </style>
 </head>
@@ -386,14 +224,20 @@
     <div class="checkmark">
       <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
     </div>
-    <h1>購課成功！</h1>
-    <p>課程已經開通，你可以馬上開始觀看。</p>
+    <h1>報名成功！</h1>
+    <p>歡迎加入即興表達課，開課前我會寄行前通知到你的信箱。</p>
   </div>
 
-  <div class="divider"></div>
+  <!-- INFO BOX -->
+  <div class="info-box fade-up fade-up-d1">
+    <h3>接下來會發生什麼</h3>
+    <p>1. 開課前一週，你會收到行前通知信，內容含 <strong>地址、注意事項、預習作業</strong>。</p>
+    <p>2. 任何問題，直接回信到 <a href="mailto:dio3212@gmail.com" style="color:var(--gold)">dio3212@gmail.com</a>，我會親自回覆。</p>
+    <p>3. 開課當天 <strong>10:00 準時開始</strong>，建議提早 15 分鐘到。</p>
+  </div>
 
   <!-- SURVEY -->
-  <div class="survey-section fade-up fade-up-d1" id="surveyBox">
+  <div class="survey-section fade-up fade-up-d2" id="surveyBox">
     <h3>幫我一個忙｜你怎麼知道東區德的？</h3>
     <p class="survey-sub">點一下就好，你的答案會幫我很大的忙。</p>
     <div class="survey-grid" id="surveyGrid">
@@ -413,64 +257,8 @@
     </div>
   </div>
 
-  <!-- UPSELL SECTION -->
-  <div class="upsell-section fade-up fade-up-d1">
-    <div class="upsell-tag">線上課學員專屬</div>
-
-    <h2>線上課讓你「懂」<br><span>實體課讓你「做到」</span></h2>
-
-    <p class="upsell-text">
-      你的眼神、語調、肢體的放鬆程度，<br>
-      這些「沒說出口的東西」，對方全部都在讀。
-    </p>
-
-    <p class="upsell-text">
-      這些「<strong>潛溝通</strong>」的東西，光看影片自己練會比較花時間。<br>
-      最有效率的方法，是在教練的指導下，在真實的互動壓力下反覆練習，<br>
-      直到變成你的本能反應，<strong>不要用背的</strong>。
-    </p>
-
-    <p class="upsell-text">
-      即興表達實體課就是專門在做這件事。
-    </p>
-  </div>
-
-  <!-- STUDENT QUOTE -->
-  <div class="quote-box fade-up fade-up-d2">
-    <p>「隔天跟別人的對話、反應，馬上就收穫了許多笑聲！忍不住又報了 Level B 的課！」</p>
-    <div class="author">— 學員 呂紹瑀</div>
-  </div>
-
-  <!-- COURSE CARD -->
-  <div class="course-card fade-up fade-up-d3">
-    <h3>東區德即興表達課 Level A</h3>
-    <p class="course-info">📅 <strong>5/30 (六) - 5/31 (日)</strong>｜10:00-17:00</p>
-    <p class="course-info">📍 台北中山站旁｜兩天共 12 小時實戰訓練</p>
-    <p class="course-info">👥 嚴格限額 <strong>10 人</strong>｜教練親自指導</p>
-
-    <div class="seats-left">⚡ 名額有限，額滿系統自動關閉</div>
-
-    <div class="price-row">
-      <span class="price-original">NT$9,600</span>
-      <span class="price-current">NT$8,600</span>
-    </div>
-    <p class="discount-note">✦ 線上課學員輸入折扣碼 <strong>improvdate1000</strong> 可折 $1,000</p>
-
-    <!-- ★ 將下方連結替換為你的實體課報名頁面 URL ★ -->
-    <a href="https://dio3212.kaik.io/courses/improvlevela" class="cta-btn">
-      立即報名即興實體課 →
-    </a>
-
-    <div class="guarantee">
-      <svg class="guarantee-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-      </svg>
-      <p>零風險保證：開課 72 小時前，任何原因可全額退費。當天有事可免費保留到下一期補課。</p>
-    </div>
-  </div>
-
   <!-- FOOTER -->
-  <div class="footer fade-up fade-up-d4">
+  <div class="footer fade-up fade-up-d3">
     <p>有任何問題歡迎來信 <a href="mailto:dio3212@gmail.com">dio3212@gmail.com</a></p>
     <p style="margin-top: 8px;">© 2026 東區德學院</p>
   </div>
@@ -478,8 +266,6 @@
 </div>
 
 <script>
-// ===== 客戶歸戶問卷 =====
-// 部署後把下面 SURVEY_ENDPOINT 替換成你的 Apps Script Web App URL
 const SURVEY_ENDPOINT = "https://script.google.com/macros/s/AKfycbyK4jCiup8xuJTX6eGFEDLXIX9zqtqnoWbzVPnSCrjCvK9cwLey6871oFyAjkR8D2bFVA/exec";
 
 document.querySelectorAll('.survey-btn').forEach(btn => {
@@ -490,8 +276,7 @@ document.querySelectorAll('.survey-btn').forEach(btn => {
     btn.style.color = 'var(--dark)';
     btn.style.borderColor = 'var(--gold)';
 
-    // 收集 URL params (Teachify 可能傳 ?email=, ?order_id= 等)
-    // 過濾字面占位符 ({customer_email}, {order_id}) 避免 Teachify 沒替換的 token 進來
+    // 過濾字面占位符
     const rawParams = Object.fromEntries(new URLSearchParams(window.location.search));
     const urlParams = {};
     for (const [k, v] of Object.entries(rawParams)) {
@@ -502,7 +287,7 @@ document.querySelectorAll('.survey-btn').forEach(btn => {
       url_params: urlParams,
       referrer: document.referrer || '',
       user_agent: navigator.userAgent,
-      page: 'thank-you-online-course',
+      page: 'thank-you-inperson-course',
       timestamp: new Date().toISOString(),
     };
 
@@ -510,7 +295,7 @@ document.querySelectorAll('.survey-btn').forEach(btn => {
       try {
         await fetch(SURVEY_ENDPOINT, {
           method: 'POST',
-          mode: 'no-cors',  // Apps Script 端用 no-cors 避免 preflight
+          mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload),
         });
@@ -521,7 +306,6 @@ document.querySelectorAll('.survey-btn').forEach(btn => {
       console.log('SURVEY_ENDPOINT not set, would submit:', payload);
     }
 
-    // 顯示謝謝
     setTimeout(() => {
       document.getElementById('surveyGrid').style.display = 'none';
       document.getElementById('surveyThanks').classList.add('show');
