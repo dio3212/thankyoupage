@@ -292,15 +292,23 @@ document.querySelectorAll('.survey-btn').forEach(btn => {
     };
 
     if (SURVEY_ENDPOINT && !SURVEY_ENDPOINT.startsWith('REPLACE')) {
+      let sent = false;
       try {
-        await fetch(SURVEY_ENDPOINT, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload),
-        });
-      } catch (e) {
-        console.warn('survey submit failed', e);
+        if (navigator.sendBeacon) {
+          const blob = new Blob([JSON.stringify(payload)], {type: 'text/plain;charset=utf-8'});
+          sent = navigator.sendBeacon(SURVEY_ENDPOINT, blob);
+        }
+      } catch (e) { console.warn('sendBeacon failed', e); }
+      if (!sent) {
+        try {
+          await fetch(SURVEY_ENDPOINT, {
+            method: 'POST',
+            mode: 'no-cors',
+            keepalive: true,
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload),
+          });
+        } catch (e) { console.warn('fetch failed', e); }
       }
     } else {
       console.log('SURVEY_ENDPOINT not set, would submit:', payload);

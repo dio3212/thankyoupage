@@ -454,7 +454,7 @@
       <span class="price-original">NT$9,600</span>
       <span class="price-current">NT$7,600</span>
     </div>
-    <p class="discount-note">✦ 線上課學員專屬價（輸入折扣碼 <strong>improvdate1000</strong> 即為此價，省 $2,000）</p>
+    <p class="discount-note">✦ 早鳥優惠省 $1,000，線上課學員輸入折扣碼 <strong>improvdate1000</strong> 再省 $1,000，共省 $2,000</p>
 
     <!-- ★ 將下方連結替換為你的實體課報名頁面 URL ★ -->
     <a href="https://dio3212.kaik.io/courses/improvlevela" class="cta-btn">
@@ -507,15 +507,25 @@ document.querySelectorAll('.survey-btn').forEach(btn => {
     };
 
     if (SURVEY_ENDPOINT && !SURVEY_ENDPOINT.startsWith('REPLACE')) {
+      let sent = false;
+      // 1. 優先用 sendBeacon（背景送達、不受頁面關閉影響）
       try {
-        await fetch(SURVEY_ENDPOINT, {
-          method: 'POST',
-          mode: 'no-cors',  // Apps Script 端用 no-cors 避免 preflight
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload),
-        });
-      } catch (e) {
-        console.warn('survey submit failed', e);
+        if (navigator.sendBeacon) {
+          const blob = new Blob([JSON.stringify(payload)], {type: 'text/plain;charset=utf-8'});
+          sent = navigator.sendBeacon(SURVEY_ENDPOINT, blob);
+        }
+      } catch (e) { console.warn('sendBeacon failed', e); }
+      // 2. fallback：fetch + keepalive（即使分頁關閉也會送）
+      if (!sent) {
+        try {
+          await fetch(SURVEY_ENDPOINT, {
+            method: 'POST',
+            mode: 'no-cors',
+            keepalive: true,
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload),
+          });
+        } catch (e) { console.warn('fetch failed', e); }
       }
     } else {
       console.log('SURVEY_ENDPOINT not set, would submit:', payload);
