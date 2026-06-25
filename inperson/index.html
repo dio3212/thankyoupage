@@ -169,6 +169,164 @@
   }
   .survey-thanks.show { display: block; }
 
+  /* ===== UPSELL SECTION ===== */
+  .upsell-section {
+    background: var(--dark2);
+    border: 1px solid rgba(242,169,0,0.2);
+    border-radius: 16px;
+    padding: 32px 24px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .upsell-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), #FF6B35);
+  }
+  .upsell-tag {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--dark);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+  .upsell-section h2 {
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  .upsell-section h2 span { color: var(--gold); }
+  .upsell-text {
+    font-size: 15px;
+    color: #D0D0E0;
+    margin-bottom: 16px;
+  }
+  .upsell-text strong { color: var(--white); }
+
+  /* ===== QUOTE BOX ===== */
+  .quote-box {
+    background: rgba(242, 169, 0, 0.08);
+    border-left: 3px solid var(--gold);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .quote-box p {
+    font-size: 14px;
+    color: #D0D0E0;
+    font-style: italic;
+  }
+  .quote-box .author {
+    font-size: 13px;
+    color: var(--gold);
+    font-style: normal;
+    margin-top: 8px;
+  }
+
+  /* ===== COURSE CARD ===== */
+  .course-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .course-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .course-info {
+    font-size: 14px;
+    color: var(--gray);
+    margin-bottom: 8px;
+  }
+  .course-info strong { color: var(--white); }
+  .price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+  }
+  .price-original {
+    font-size: 16px;
+    color: var(--gray);
+    text-decoration: line-through;
+  }
+  .price-current {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--gold);
+  }
+  .discount-note {
+    font-size: 13px;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+
+  /* ===== CTA BUTTON ===== */
+  .cta-btn {
+    display: block;
+    width: 100%;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, var(--gold), #FF8C00);
+    color: var(--dark);
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(242, 169, 0, 0.3);
+  }
+  .secondary-link {
+    display: block;
+    text-align: center;
+    margin-top: 14px;
+    color: var(--gold);
+    font-size: 14px;
+    text-decoration: none;
+  }
+  .secondary-link:hover { text-decoration: underline; }
+
+  /* ===== GUARANTEE ===== */
+  .guarantee {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 16px;
+    background: rgba(46, 204, 113, 0.08);
+    border-radius: 8px;
+  }
+  .guarantee-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    color: var(--green);
+  }
+  .guarantee p {
+    font-size: 13px;
+    color: #A0D0B0;
+  }
+
   /* ===== FOOTER ===== */
   .footer {
     text-align: center;
@@ -206,12 +364,17 @@
   .fade-up-d1 { animation-delay: 0.1s; }
   .fade-up-d2 { animation-delay: 0.2s; }
   .fade-up-d3 { animation-delay: 0.4s; }
+  .fade-up-d4 { animation-delay: 0.6s; }
 
   /* ===== MOBILE ===== */
   @media (max-width: 480px) {
     .container { padding: 32px 16px 48px; }
     .success-badge h1 { font-size: 24px; }
     .info-box { padding: 20px 18px; }
+    .upsell-section { padding: 24px 18px; }
+    .upsell-section h2 { font-size: 20px; }
+    .price-current { font-size: 24px; }
+    .cta-btn { font-size: 16px; padding: 16px 20px; }
   }
 </style>
 <!-- Meta Pixel Code (補 Teachify 端漏的 Purchase 事件，2026-05-07 加) -->
@@ -281,8 +444,62 @@ src="https://www.facebook.com/tr?id=863573241308280&ev=PageView&noscript=1"/></n
     </div>
   </div>
 
+  <!-- DIVIDER -->
+  <div class="divider"></div>
+
+  <!-- UPSELL: 線上課加購 -->
+  <div class="upsell-section fade-up fade-up-d2">
+    <div class="upsell-tag">實體課學員專屬</div>
+
+    <h2>教室裡練的即興<br><span>用到約會上，威力加倍</span></h2>
+
+    <p class="upsell-text">
+      你在實體課練到的臨場反應、Yes And、接話節奏，<br>
+      正是約會聊天最缺、也最難自己練的那一塊。
+    </p>
+
+    <p class="upsell-text">
+      《即興約會實戰系統》把同一套即興心法，<br>
+      直接拆給你用在<strong>交友軟體開場、網聊回訊、約會現場</strong>，<br>
+      52 個單元帶你從心態到實戰，一路走到把人約出來。
+    </p>
+  </div>
+
+  <!-- STUDENT QUOTE -->
+  <div class="quote-box fade-up fade-up-d2">
+    <p>「用裡面的技巧，加上原本就會的即興，聊天變得很自然，也讓我順利交到女朋友了！」</p>
+    <div class="author">線上課學員 寶劍</div>
+  </div>
+
+  <!-- COURSE CARD -->
+  <div class="course-card fade-up fade-up-d3">
+    <h3>2026 全新升級．即興約會實戰系統</h3>
+    <p class="course-info">🎬 <strong>52 個單元</strong>、超過 8 小時系統教學｜線上無限回放</p>
+    <p class="course-info">🎧 附 Podcast 純聽版，通勤隨時聽</p>
+    <p class="course-info">🛡️ 30 天不滿意，全額退費</p>
+
+    <div class="price-row">
+      <span class="price-original">NT$5,300</span>
+      <span class="price-current">NT$4,300</span>
+    </div>
+    <p class="discount-note">✦ 實體課學員專屬，折扣碼已自動帶入，現折 NT$1,000</p>
+
+    <a href="https://dio3212.kaik.io/checkout?planId=e0495d20-8f7b-4b6c-938a-22f5584e10e2&amp;coupon=1000online" class="cta-btn">
+      用 NT$4,300 加購線上課 →
+    </a>
+
+    <a href="https://dio3212.kaik.io/courses/improvdating" class="secondary-link" target="_blank" rel="noopener">先看課程介紹 →</a>
+
+    <div class="guarantee">
+      <svg class="guarantee-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+      <p>30 天不滿意保證：上完課若覺得無效，30 天內無條件全額退費。</p>
+    </div>
+  </div>
+
   <!-- FOOTER -->
-  <div class="footer fade-up fade-up-d3">
+  <div class="footer fade-up fade-up-d4">
     <p>有任何問題歡迎來信 <a href="mailto:dio3212@gmail.com">dio3212@gmail.com</a></p>
     <p style="margin-top: 8px;">© 2026 東區德學院</p>
   </div>
