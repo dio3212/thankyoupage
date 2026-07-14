@@ -395,7 +395,7 @@ fbq('track', 'PageView');
   if (!tn || tn.charAt(0) === '{') return;
   var k = 'fb_purchase_fired_' + tn;
   try { if (localStorage.getItem(k)) return; } catch(e){}
-  fbq('track', 'Purchase', {currency: 'TWD', value: 8600, content_name: 'Inperson Course Level A'}, {eventID: tn});
+  fbq('track', 'Purchase', {currency: 'TWD', value: 8600, content_name: 'Inperson Course Level A', content_type: 'product', content_ids: ['improvlevela']}, {eventID: tn});
   try { localStorage.setItem(k, '1'); } catch(e){}
 })();
 </script>

@@ -403,7 +403,7 @@ fbq('track', 'PageView');
   if (!tn || tn.charAt(0) === '{') return;
   var k = 'fb_purchase_fired_' + tn;
   try { if (localStorage.getItem(k)) return; } catch(e){}
-  fbq('track', 'Purchase', {currency: 'TWD', value: 5300, content_name: 'Online Course'}, {eventID: tn});
+  fbq('track', 'Purchase', {currency: 'TWD', value: 5300, content_name: 'Online Course', content_type: 'product', content_ids: ['improvdating']}, {eventID: tn});
   try { localStorage.setItem(k, '1'); } catch(e){}
 })();
 </script>
