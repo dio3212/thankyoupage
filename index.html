@@ -395,8 +395,17 @@ t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '863573241308280');
 fbq('track', 'PageView');
-// 線上課感謝頁 = 已購課，fire Purchase 事件給 Meta 廣告優化用
-fbq('track', 'Purchase', {currency: 'TWD', value: 7600, content_name: 'Online Course'});
+// Purchase 只在 URL 帶 tradeNo 時發，eventID=tradeNo 供 Meta 與伺服器端 CAPI 事件去重（2026-07-14 改）
+// 沒 tradeNo 不發：伺服器端（Teachify webhook → CAPI）必送，瀏覽器端重複發只會灌水
+// localStorage 防同一訂單重整頁面重複觸發
+(function(){
+  var tn = new URLSearchParams(window.location.search).get('tradeNo') || '';
+  if (!tn || tn.charAt(0) === '{') return;
+  var k = 'fb_purchase_fired_' + tn;
+  try { if (localStorage.getItem(k)) return; } catch(e){}
+  fbq('track', 'Purchase', {currency: 'TWD', value: 5300, content_name: 'Online Course'}, {eventID: tn});
+  try { localStorage.setItem(k, '1'); } catch(e){}
+})();
 </script>
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=863573241308280&ev=PageView&noscript=1"/></noscript>
