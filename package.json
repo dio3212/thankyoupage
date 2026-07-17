@@ -1,0 +1,13 @@
+{
+  "name": "thankyoupage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static post-purchase pages with attribution surveys and purchase-event deduplication.",
+  "scripts": {
+    "test": "node tests/validate-pages.mjs"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  }
+}
