@@ -81,4 +81,14 @@ for (const path of ["index.html", "inperson/index.html", "consult/index.html"]) 
   assert.ok(!/\bvalue\s*:/.test(block), `${path} GA4 backup must not send value`);
 }
 
+// 購前助攻（2026-09-19）：第一題問「第一次從哪裡知道」，第二題選填、另送 kind=purchase_assist，且不可掛 survey-btn（會被第一題的鎖定一起停用）
+for (const path of ["index.html", "inperson/index.html", "consult/index.html"]) {
+  const html = await readFile(path, "utf8");
+  assert.ok(html.includes("<h3>幫我一個忙｜你第一次是從哪裡知道東區德的？</h3>"), `${path} discovery question wording changed`);
+  assert.ok(html.includes("kind: 'purchase_assist'"), `${path} is missing the assist payload kind`);
+  assert.ok(!html.includes('class="survey-btn assist-btn"'), `${path} assist buttons must not reuse .survey-btn`);
+  assert.equal((html.match(/class="assist-btn"/g) ?? []).length, 12, `${path} must have 12 assist options`);
+  assert.ok(!/order_ref[^\n]*trade_no|\btrade_no\s*:/.test(html.slice(html.indexOf("purchase_assist"))), `${path} assist payload must not carry trade_no (would hit the webhook branch)`);
+}
+
 console.log(`Validated ${pages.length} production pages.`);

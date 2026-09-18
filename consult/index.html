@@ -215,6 +215,21 @@
     display: none;
   }
   .survey-thanks.show { display: block; }
+  /* 購前助攻（選填第二題，2026-09-19） */
+  .assist-box { display: none; margin-top: 18px; padding-top: 16px; border-top: 1px dashed rgba(255,255,255,0.15); }
+  .assist-box.show { display: block; }
+  .assist-box h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: var(--white); }
+  .assist-box .survey-sub { margin-bottom: 12px; }
+  .assist-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: var(--white); font-size: 13px; font-weight: 500; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: all 0.15s; text-align: left; font-family: inherit; }
+  .assist-btn:hover { background: rgba(242,169,0,0.12); border-color: var(--gold); }
+  .assist-btn:disabled { cursor: default; opacity: 0.3; }
+  .assist-detail { display: flex; gap: 8px; margin-top: 12px; }
+  .assist-detail input { flex: 1; min-width: 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: var(--white); border-radius: 10px; padding: 10px 12px; font-size: 14px; font-family: inherit; }
+  .assist-detail input::placeholder { color: var(--gray); }
+  .assist-detail button { flex: none; background: rgba(242,169,0,0.12); border: 1px solid var(--gold); color: var(--white); border-radius: 10px; padding: 10px 14px; font-size: 14px; font-family: inherit; cursor: pointer; }
+  .assist-detail button:disabled, .assist-detail input:disabled { opacity: 0.4; cursor: default; }
+  .assist-done { display: none; text-align: center; color: var(--gold); font-size: 14px; margin-top: 10px; }
+  .assist-done.show { display: block; }
 
   /* ===== NEXT PROGRAM（輕量，不硬推） ===== */
   .next-box {
@@ -413,7 +428,7 @@ window.dioGaPurchaseBackup(new URLSearchParams(window.location.search).get('trad
 
   <!-- SURVEY -->
   <div class="survey-section fade-up fade-up-d2" id="surveyBox">
-    <h3>幫我一個忙｜你怎麼知道這個一對一諮詢的？</h3>
+    <h3>幫我一個忙｜你第一次是從哪裡知道東區德的？</h3>
     <p class="survey-sub">點一下就好，你的答案會幫我很大的忙。</p>
     <div class="survey-grid" id="surveyGrid">
       <button class="survey-btn" data-answer="Threads"><span class="icon">🧵</span>Threads</button>
@@ -430,6 +445,31 @@ window.dioGaPurchaseBackup(new URLSearchParams(window.location.search).get('trad
     </div>
     <div class="survey-thanks" id="surveyThanks">
       謝謝你 🙏 你的答案幫了大忙
+    </div>
+
+    <!-- 購前助攻（選填第二題，2026-09-19）：另存「購前助攻」分頁，第一題的答案欄維持「第一次從哪裡知道」 -->
+    <div class="assist-box" id="assistBox">
+      <h4>再一題（選填）｜這次決定購買前，哪一個幫你最多？</h4>
+      <p class="survey-sub">可以跟上一題一樣，也可以不一樣。</p>
+      <div class="survey-grid">
+        <button class="assist-btn" data-assist="部落格文章">部落格文章</button>
+        <button class="assist-btn" data-assist="Google 搜尋">Google 搜尋</button>
+        <button class="assist-btn" data-assist="ChatGPT / AI 問答">ChatGPT / AI 問答</button>
+        <button class="assist-btn" data-assist="Email 電子報">Email 電子報</button>
+        <button class="assist-btn" data-assist="Threads">Threads</button>
+        <button class="assist-btn" data-assist="YouTube">YouTube</button>
+        <button class="assist-btn" data-assist="Facebook">Facebook</button>
+        <button class="assist-btn" data-assist="直播">直播</button>
+        <button class="assist-btn" data-assist="課程介紹頁或免費試看">課程介紹頁或免費試看</button>
+        <button class="assist-btn" data-assist="學員見證或朋友推薦">學員見證或朋友推薦</button>
+        <button class="assist-btn" data-assist="一對一諮詢">一對一諮詢</button>
+        <button class="assist-btn" data-assist="其他">其他</button>
+      </div>
+      <div class="assist-detail">
+        <input type="text" id="assistDetail" maxlength="300" placeholder="如果是搜尋或問 AI，還記得打了什麼嗎？也可以貼文章網址（選填）">
+        <button type="button" id="assistSend">送出補充</button>
+      </div>
+      <div class="assist-done" id="assistDone">收到，謝謝你。</div>
     </div>
   </div>
 
@@ -504,9 +544,55 @@ document.querySelectorAll('.survey-btn').forEach(btn => {
     setTimeout(() => {
       document.getElementById('surveyGrid').style.display = 'none';
       document.getElementById('surveyThanks').classList.add('show');
+      var ab = document.getElementById('assistBox'); if (ab) ab.classList.add('show');
     }, 600);
   });
 });
+
+// ===== 購前助攻（選填第二題，2026-09-19）=====
+// 第一題的「答案」欄＝第一次從哪裡知道東區德；這一題送 kind=purchase_assist，Apps Script 另存「購前助攻」分頁，兩題分開、不互相覆寫
+(function () {
+  var box = document.getElementById('assistBox');
+  if (!box) return;
+  var chosen = '';
+  function ref() {
+    var t = new URLSearchParams(window.location.search).get('tradeNo') || '';
+    return /^DIO[0-9A-F]{17}$/.test(t) ? t : '';
+  }
+  function post(extra) {
+    var p = {kind: 'purchase_assist', page: 'thank-you-consult', order_ref: ref(), survey_v: '2', user_agent: navigator.userAgent, assist_answer: chosen};
+    for (var k in extra) p[k] = extra[k];
+    if (!SURVEY_ENDPOINT || SURVEY_ENDPOINT.startsWith('REPLACE')) { console.log('assist payload', p); return; }
+    try {
+      if (navigator.sendBeacon && navigator.sendBeacon(SURVEY_ENDPOINT, new Blob([JSON.stringify(p)], {type: 'text/plain;charset=utf-8'}))) return;
+    } catch (e) {}
+    try {
+      fetch(SURVEY_ENDPOINT, {method: 'POST', mode: 'no-cors', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify(p)});
+    } catch (e) {}
+  }
+  box.querySelectorAll('.assist-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (chosen) return;
+      chosen = btn.dataset.assist;
+      box.querySelectorAll('.assist-btn').forEach(function (b) { if (b !== btn) b.disabled = true; });
+      btn.style.background = 'var(--gold)';
+      btn.style.color = 'var(--dark)';
+      btn.style.borderColor = 'var(--gold)';
+      post({});
+      document.getElementById('assistDone').classList.add('show');
+    });
+  });
+  var send = document.getElementById('assistSend');
+  var input = document.getElementById('assistDetail');
+  send.addEventListener('click', function () {
+    var v = (input.value || '').trim();
+    if (!v) return;
+    post({assist_detail: v.slice(0, 300)});
+    send.disabled = true;
+    input.disabled = true;
+    document.getElementById('assistDone').classList.add('show');
+  });
+})();
 </script>
 
 </body>
