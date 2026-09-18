@@ -59,4 +59,26 @@ for (const page of pages) {
   );
 }
 
+// GA4 purchase 備援（2026-09-19）：三頁都要有，且只能有一次、不帶 value、只認真訂單編號
+for (const path of ["index.html", "inperson/index.html", "consult/index.html"]) {
+  const html = await readFile(path, "utf8");
+  assert.equal(
+    (html.match(/gtag\('event', 'purchase'/g) ?? []).length,
+    1,
+    `${path} must contain exactly one GA4 purchase backup event`,
+  );
+  for (const snippet of [
+    "/^DIO[0-9A-F]{17}$/.test(tn || '')",
+    "ga_purchase_backup_",
+    "transaction_id: tn",
+    "send_page_view: false",
+    "gtag/js?id=G-JC7428L3DP",
+    "'G-ES6BX92WL7'",
+  ]) {
+    assert.ok(html.includes(snippet), `${path} GA4 backup is missing: ${snippet}`);
+  }
+  const block = html.slice(html.indexOf("gtag('event', 'purchase'"), html.indexOf("transport_type: 'beacon'"));
+  assert.ok(!/\bvalue\s*:/.test(block), `${path} GA4 backup must not send value`);
+}
+
 console.log(`Validated ${pages.length} production pages.`);

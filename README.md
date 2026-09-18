@@ -19,6 +19,8 @@ deduplication.
 - Uses the order number as `eventID` so browser events can be deduplicated
   against server-side Conversions API events.
 - Prevents repeat browser events after refresh with `localStorage`.
+- Sends a backup GA4 `purchase` with the same `transaction_id` (no `value`), so
+  GA4 deduplicates it when the hosted checkout's own event already arrived.
 - Captures a one-click attribution survey.
 - Prefers `navigator.sendBeacon`, with `fetch` and `keepalive` as a fallback.
 - Filters unresolved checkout placeholders before data is submitted.
