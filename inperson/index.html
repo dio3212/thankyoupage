@@ -440,6 +440,7 @@ window.dioGaPurchaseBackup = function (tn) {
   gtag('config', 'G-ES6BX92WL7', {send_page_view: false, page_location: loc});
   gtag('event', 'purchase_backup_observed', {
     send_to: 'G-ES6BX92WL7',
+    page_location: loc,   // 攔截實測發現只靠 config 的 page_location 不會套到事件上，事件本身也要帶，報表才抽得到 tradeNo
     transaction_id: tn,
     backup_source: 'thankyou_page',
     transport_type: 'beacon'

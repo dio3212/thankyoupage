@@ -74,6 +74,7 @@ for (const path of ["index.html", "inperson/index.html", "consult/index.html"]) 
     "transaction_id: tn",
     "send_page_view: false",
     "send_to: 'G-ES6BX92WL7'",
+    "page_location: loc",
     "gtag/js?id=G-JC7428L3DP",
   ]) {
     assert.ok(html.includes(snippet), `${path} GA4 backup is missing: ${snippet}`);
