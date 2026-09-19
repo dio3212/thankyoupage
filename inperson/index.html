@@ -417,11 +417,11 @@ fbq('track', 'PageView');
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=863573241308280&ev=PageView&noscript=1"/></noscript>
 <!-- End Meta Pixel Code -->
-<!-- GA4 purchase 備援（2026-09-19 加）
+<!-- GA4 購買到站備援（2026-09-19 加，同日依 Codex 複審改版）
      Teachify 的 /redirect 頁有時在 GA4 送出前就跳轉，6-8 月有 2 筆訂單買家到了本頁填問卷、GA4 卻沒有 purchase。
-     這裡用同一個 transaction_id 補送，GA4 會以 transaction_id 去重，不會重複計數成交。
-     刻意不帶 value：瀏覽器端拿不到實付金額（優惠碼、早鳥價），金額一律以 Teachify 為正本。
-     本頁在 github.io 網域，session 來源不可用；報表以 hostName 分辨，不拿本頁的 session 當購買來源。 -->
+     這裡改送非電商事件 purchase_backup_observed：本頁在 github.io、client_id 與 dioacademy.tw 不同，
+     GA4 的 transaction_id 去重只在同一使用者內成立，所以不能再送原生 purchase（會讓 purchase 關鍵事件與交易數重複）。
+     只送 G-ES6BX92WL7（報表資源），不帶 value 與 items；訂單編號放在 page_location 與 transaction_id，報表以付款正本去重。 -->
 <script>
 window.dioGaPurchaseBackup = function (tn) {
   if (!/^DIO[0-9A-F]{17}$/.test(tn || '')) return false;   // 只認 Teachify 真訂單編號
@@ -432,18 +432,16 @@ window.dioGaPurchaseBackup = function (tn) {
   if (!document.querySelector('script[data-dio-gtag]')) {
     var s = document.createElement('script');
     s.async = true; s.setAttribute('data-dio-gtag', '1');
-    s.src = 'https://www.googletagmanager.com/gtag/js?id=G-JC7428L3DP';
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=G-JC7428L3DP';   // 載入器；G-ES6BX92WL7 沒有獨立載入器
     document.head.appendChild(s);
   }
   var loc = location.origin + location.pathname + '?tradeNo=' + tn;   // 只留訂單編號，其他網址參數不送 GA
   gtag('js', new Date());
   gtag('config', 'G-ES6BX92WL7', {send_page_view: false, page_location: loc});
-  gtag('config', 'G-JC7428L3DP', {send_page_view: false, page_location: loc});
-  gtag('event', 'purchase', {
+  gtag('event', 'purchase_backup_observed', {
+    send_to: 'G-ES6BX92WL7',
     transaction_id: tn,
-    currency: 'TWD',
-    affiliation: 'thankyou_backup',
-    items: [{item_id: 'inperson-course', item_name: 'inperson-course', affiliation: 'thankyou_backup', quantity: 1}],
+    backup_source: 'thankyou_page',
     transport_type: 'beacon'
   });
   try { localStorage.setItem(k, '1'); } catch (e) {}
@@ -451,7 +449,7 @@ window.dioGaPurchaseBackup = function (tn) {
 };
 window.dioGaPurchaseBackup(new URLSearchParams(window.location.search).get('tradeNo') || '');
 </script>
-<!-- End GA4 purchase 備援 -->
+<!-- End GA4 購買到站備援 -->
 </head>
 <body>
 

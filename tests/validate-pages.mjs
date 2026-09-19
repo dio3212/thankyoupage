@@ -59,26 +59,28 @@ for (const page of pages) {
   );
 }
 
-// GA4 purchase 備援（2026-09-19）：三頁都要有，且只能有一次、不帶 value、只認真訂單編號
+// GA4 購買到站備援（2026-09-19，Codex 複審後改版）：三頁都要有；只能送非電商事件，絕不能再送原生 purchase
 for (const path of ["index.html", "inperson/index.html", "consult/index.html"]) {
   const html = await readFile(path, "utf8");
   assert.equal(
-    (html.match(/gtag\('event', 'purchase'/g) ?? []).length,
+    (html.match(/gtag\('event', 'purchase_backup_observed'/g) ?? []).length,
     1,
-    `${path} must contain exactly one GA4 purchase backup event`,
+    `${path} must contain exactly one GA4 backup event`,
   );
+  assert.ok(!/gtag\('event', 'purchase'/.test(html), `${path} must not send a native GA4 purchase (cross-client duplicate risk)`);
   for (const snippet of [
     "/^DIO[0-9A-F]{17}$/.test(tn || '')",
     "ga_purchase_backup_",
     "transaction_id: tn",
     "send_page_view: false",
+    "send_to: 'G-ES6BX92WL7'",
     "gtag/js?id=G-JC7428L3DP",
-    "'G-ES6BX92WL7'",
   ]) {
     assert.ok(html.includes(snippet), `${path} GA4 backup is missing: ${snippet}`);
   }
-  const block = html.slice(html.indexOf("gtag('event', 'purchase'"), html.indexOf("transport_type: 'beacon'"));
-  assert.ok(!/\bvalue\s*:/.test(block), `${path} GA4 backup must not send value`);
+  const block = html.slice(html.indexOf("gtag('event', 'purchase_backup_observed'"), html.indexOf("transport_type: 'beacon'"));
+  assert.ok(!/\b(value|items|currency)\s*:/.test(block), `${path} GA4 backup must not carry ecommerce fields`);
+  assert.ok(!/gtag\('config', 'G-JC7428L3DP'/.test(html), `${path} must not config the non-report property`);
 }
 
 // 購前助攻（2026-09-19）：第一題問「第一次從哪裡知道」，第二題選填、另送 kind=purchase_assist，且不可掛 survey-btn（會被第一題的鎖定一起停用）
