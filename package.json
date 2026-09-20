@@ -4,7 +4,7 @@
   "private": true,
   "description": "Static post-purchase pages with attribution surveys and purchase-event deduplication.",
   "scripts": {
-    "test": "node tests/validate-pages.mjs"
+    "test": "node tests/validate-pages.mjs && node tests/deliver-behavior.mjs"
   },
   "license": "MIT",
   "engines": {

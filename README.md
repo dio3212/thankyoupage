@@ -23,7 +23,17 @@ deduplication.
   number. It is deliberately not a native `purchase`: this page lives on another
   domain (different client ID), where `transaction_id` de-duplication is not
   guaranteed. Reports reconcile it against the payment source of truth.
-- Captures a one-click attribution survey.
+- Captures a one-click attribution survey and an optional second question. The
+  second question is submitted as a single payload (selection and free text
+  together) and, when the URL carries a valid order number, at most once per
+  order per browser.
+- Button submits use a CORS `fetch` and only report success when the Apps Script
+  endpoint answers `{"ok":true}`; network errors, timeouts (20 s), non-2xx, non-JSON
+  replies and `ok:false` show a retry prompt. Leaving the page (`pagehide`) falls
+  back to `sendBeacon`, which only hands the payload to the browser, so it never
+  writes the "already sent" flag. A timed-out submit that the server actually
+  stored can be retried, producing a second row for the same order; downstream
+  readers should keep the latest row per order.
 - Prefers `navigator.sendBeacon`, with `fetch` and `keepalive` as a fallback.
 - Filters unresolved checkout placeholders before data is submitted.
 - Runs as static HTML on GitHub Pages, with no build step or runtime dependency.

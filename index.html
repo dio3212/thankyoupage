@@ -369,6 +369,11 @@
   .assist-detail button:disabled, .assist-detail input:disabled { opacity: 0.4; cursor: default; }
   .assist-done { display: none; text-align: center; color: var(--gold); font-size: 14px; margin-top: 10px; }
   .assist-done.show { display: block; }
+  .form-error { display: none; text-align: center; color: #ff8a80; font-size: 14px; margin-top: 10px; }
+  .form-error.show { display: block; }
+  .form-status { display: none; text-align: center; color: rgba(255,255,255,0.6); font-size: 14px; margin-top: 10px; }
+  .form-status.show { display: block; }
+  .assist-box.sent > :not(.assist-done) { display: none; }
 
   /* ===== ANIMATIONS ===== */
   @keyframes popIn {
@@ -433,8 +438,6 @@ src="https://www.facebook.com/tr?id=863573241308280&ev=PageView&noscript=1"/></n
 <script>
 window.dioGaPurchaseBackup = function (tn) {
   if (!/^DIO[0-9A-F]{17}$/.test(tn || '')) return false;   // 只認 Teachify 真訂單編號
-  var k = 'ga_purchase_backup_' + tn;
-  try { if (localStorage.getItem(k)) return false; } catch (e) {}
   window.dataLayer = window.dataLayer || [];
   window.gtag = window.gtag || function () { dataLayer.push(arguments); };
   if (!document.querySelector('script[data-dio-gtag]')) {
@@ -452,8 +455,10 @@ window.dioGaPurchaseBackup = function (tn) {
     transaction_id: tn,
     backup_source: 'thankyou_page',
     transport_type: 'beacon'
+    // 刻意不記「這筆已送過」的旗標：event_callback 只證明 gtag 已派送，不證明 GA4 收到，
+    // 攔追蹤的瀏覽器有可能 callback 跑了、collect 請求卻被擋，旗標一寫就永久不再補送，
+    // 而那正是最需要這個備援事件的買家。改成每次載入都送，重複由報表按訂單編號去重（本事件不帶金額、非關鍵事件）。
   });
-  try { localStorage.setItem(k, '1'); } catch (e) {}
   return true;
 };
 window.dioGaPurchaseBackup(new URLSearchParams(window.location.search).get('tradeNo') || '');
@@ -492,6 +497,8 @@ window.dioGaPurchaseBackup(new URLSearchParams(window.location.search).get('trad
       <button class="survey-btn" data-answer="ChatGPT / AI 問答"><span class="icon">🤖</span>ChatGPT / AI 問答</button>
       <button class="survey-btn" data-answer="其他"><span class="icon">✨</span>其他</button>
     </div>
+    <div class="form-error" id="surveyError" role="alert">沒有送出成功，請確認網路後再點一次。</div>
+    <div class="form-status" id="surveyStatus" role="status" aria-live="polite">送出中…</div>
     <div class="survey-thanks" id="surveyThanks">
       謝謝你 🙏 你的答案幫了大忙
     </div>
@@ -499,7 +506,7 @@ window.dioGaPurchaseBackup(new URLSearchParams(window.location.search).get('trad
     <!-- 購前助攻（選填第二題，2026-09-19）：另存「購前助攻」分頁，第一題的答案欄維持「第一次從哪裡知道」 -->
     <div class="assist-box" id="assistBox">
       <h4>再一題（選填）｜這次決定購買前，哪一個幫你最多？</h4>
-      <p class="survey-sub">可以跟上一題一樣，也可以不一樣。</p>
+      <p class="survey-sub">可以跟上一題一樣，也可以不一樣。選好後按「送出」。</p>
       <div class="survey-grid">
         <button class="assist-btn" data-assist="部落格文章">部落格文章</button>
         <button class="assist-btn" data-assist="Google 搜尋">Google 搜尋</button>
@@ -516,8 +523,10 @@ window.dioGaPurchaseBackup(new URLSearchParams(window.location.search).get('trad
       </div>
       <div class="assist-detail">
         <input type="text" id="assistDetail" maxlength="300" placeholder="如果是搜尋或問 AI，還記得打了什麼嗎？也可以貼文章網址（選填）">
-        <button type="button" id="assistSend">送出補充</button>
+        <button type="button" id="assistSend" disabled>送出</button>
       </div>
+      <div class="form-error" id="assistError" role="alert">沒有送出成功，請確認網路後再按一次「送出」。</div>
+      <div class="form-status" id="assistStatus" role="status" aria-live="polite">送出中…</div>
       <div class="assist-done" id="assistDone">收到，謝謝你。</div>
     </div>
   </div>
@@ -578,20 +587,69 @@ window.dioGaPurchaseBackup(new URLSearchParams(window.location.search).get('trad
 // 部署後把下面 SURVEY_ENDPOINT 替換成你的 Apps Script Web App URL
 const SURVEY_ENDPOINT = "https://script.google.com/macros/s/AKfycbyK4jCiup8xuJTX6eGFEDLXIX9zqtqnoWbzVPnSCrjCvK9cwLey6871oFyAjkR8D2bFVA/exec";
 
+// 送出封包給 Apps Script，分兩種情境。cb 只會呼叫一次：cb(ok, queued)，queued＝true 代表只交給瀏覽器、沒有伺服器確認，
+// 呼叫端不可據此寫「已送過」的永久旗標。
+// ① 買家按按鈕、頁面還開著：用 CORS fetch 送並讀回應。Apps Script 端點先轉址再回 JSON，兩跳都帶 Access-Control-Allow-Origin: *（2026-09-20 實測），
+//    成功回 {"ok":true,"type":"survey"|"assist"}，拒絕回 {"ok":false,...}，腳本例外則是 HTML 錯誤頁。只有明確的 ok:true 才算送達；
+//    網路失敗、逾時、非 2xx、非 JSON、ok:false 一律 cb(false)，呼叫端要還原按鈕並提示重試，不可顯示「收到」。
+// ② leaving＝true（頁面正在關閉）：沒有畫面可更新、回應也讀不到，改用 sendBeacon（排進瀏覽器佇列就算），排不進去才用 no-cors fetch keepalive。
+//    這條路只能保證「已交給瀏覽器」，不保證伺服器寫入；瀏覽器沒有 fetch 時也走這條。
+function deliverSurvey(payload, cb, leaving) {
+  if (!SURVEY_ENDPOINT || SURVEY_ENDPOINT.startsWith('REPLACE')) {
+    console.log('SURVEY_ENDPOINT not set, would submit:', payload);
+    cb(true);
+    return;
+  }
+  const body = JSON.stringify(payload);
+  const headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+  if (leaving || typeof fetch !== 'function') {
+    try {
+      if (navigator.sendBeacon && navigator.sendBeacon(SURVEY_ENDPOINT, new Blob([body], {type: 'text/plain;charset=utf-8'}))) {
+        cb(true, true);
+        return;
+      }
+    } catch (e) { console.warn('sendBeacon failed', e); }
+    try {
+      fetch(SURVEY_ENDPOINT, { method: 'POST', mode: 'no-cors', keepalive: true, headers: headers, body: body })
+        .then(() => cb(true, true), (e) => { console.warn('fetch failed', e); cb(false); });
+    } catch (e) { console.warn('fetch failed', e); cb(false); }
+    return;
+  }
+  let done = false;
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  const timer = setTimeout(() => { if (ctl) ctl.abort(); finish(false); }, 20000);   // Apps Script 冷啟動實測 1.5-3.3 秒，20 秒還沒回就當失敗
+  function finish(ok) { if (done) return; done = true; clearTimeout(timer); cb(ok); }
+  try {
+    fetch(SURVEY_ENDPOINT, { method: 'POST', mode: 'cors', keepalive: true, headers: headers, body: body, signal: ctl ? ctl.signal : undefined })
+      .then((r) => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then((j) => finish(!!j && j.ok === true))
+      .catch((e) => { console.warn('survey delivery failed', e); finish(false); });
+  } catch (e) { console.warn('fetch failed', e); finish(false); }
+}
+
+// ===== 第一題：第一次從哪裡知道東區德 =====
+let surveyLocked = false;
 document.querySelectorAll('.survey-btn').forEach(btn => {
-  btn.addEventListener('click', async () => {
+  btn.addEventListener('click', () => {
+    if (surveyLocked) return;   // 送出中或已送出，不接受第二次點擊
+    surveyLocked = true;
     const answer = btn.dataset.answer;
-    document.querySelectorAll('.survey-btn').forEach(b => b.disabled = true);
+    const allBtns = document.querySelectorAll('.survey-btn');
+    allBtns.forEach(b => b.disabled = true);
     btn.style.background = 'var(--gold)';
     btn.style.color = 'var(--dark)';
     btn.style.borderColor = 'var(--gold)';
+    document.getElementById('surveyError').classList.remove('show');
+    document.getElementById('surveyStatus').classList.add('show');
 
     // 收集 URL params (Teachify 可能傳 ?email=, ?order_id= 等)
     // 過濾字面占位符 ({customer_email}, {order_id}) 避免 Teachify 沒替換的 token 進來
     const rawParams = Object.fromEntries(new URLSearchParams(window.location.search));
     const urlParams = {};
+    let paramCount = 0;
     for (const [k, v] of Object.entries(rawParams)) {
-      if (v && !(v.startsWith('{') && v.endsWith('}'))) urlParams[k] = v;
+      if (paramCount >= 20) break;   // keepalive 請求本體有 64 KiB 上限，異常長的網址不能讓送出永遠失敗
+      if (v && !(v.startsWith('{') && v.endsWith('}'))) { urlParams[k.slice(0, 60)] = v.slice(0, 300); paramCount++; }
     }
     const payload = {
       answer,
@@ -602,83 +660,93 @@ document.querySelectorAll('.survey-btn').forEach(btn => {
       timestamp: new Date().toISOString(),
     };
 
-    if (SURVEY_ENDPOINT && !SURVEY_ENDPOINT.startsWith('REPLACE')) {
-      let sent = false;
-      // 1. 優先用 sendBeacon（背景送達、不受頁面關閉影響）
-      try {
-        if (navigator.sendBeacon) {
-          const blob = new Blob([JSON.stringify(payload)], {type: 'text/plain;charset=utf-8'});
-          sent = navigator.sendBeacon(SURVEY_ENDPOINT, blob);
-        }
-      } catch (e) { console.warn('sendBeacon failed', e); }
-      // 2. fallback：fetch + keepalive（即使分頁關閉也會送）
-      if (!sent) {
-        try {
-          await fetch(SURVEY_ENDPOINT, {
-            method: 'POST',
-            mode: 'no-cors',
-            keepalive: true,
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payload),
-          });
-        } catch (e) { console.warn('fetch failed', e); }
+    deliverSurvey(payload, ok => {
+      document.getElementById('surveyStatus').classList.remove('show');
+      if (!ok) {
+        // 沒送出去：還原按鈕讓買家再點一次，不顯示謝謝
+        surveyLocked = false;
+        allBtns.forEach(b => b.disabled = false);
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+        document.getElementById('surveyError').classList.add('show');
+        return;
       }
-    } else {
-      console.log('SURVEY_ENDPOINT not set, would submit:', payload);
-    }
-
-    // 顯示謝謝
-    setTimeout(() => {
-      document.getElementById('surveyGrid').style.display = 'none';
-      document.getElementById('surveyThanks').classList.add('show');
-      var ab = document.getElementById('assistBox'); if (ab) ab.classList.add('show');
-    }, 600);
+      // 顯示謝謝
+      setTimeout(() => {
+        document.getElementById('surveyGrid').style.display = 'none';
+        document.getElementById('surveyThanks').classList.add('show');
+        var ab = document.getElementById('assistBox');
+        if (ab && ab.dataset.sent !== '1') ab.classList.add('show');   // 這筆訂單第二題已送過就不再顯示
+      }, 250);
+    });
   });
 });
 
-// ===== 購前助攻（選填第二題，2026-09-19）=====
-// 第一題的「答案」欄＝第一次從哪裡知道東區德；這一題送 kind=purchase_assist，Apps Script 另存「購前助攻」分頁，兩題分開、不互相覆寫
+// ===== 購前助攻（選填第二題，2026-09-19；同日 Codex 複審後改成單次提交）=====
+// 第一題的「答案」欄＝第一次從哪裡知道東區德；這一題送 kind=purchase_assist，Apps Script 另存「購前助攻」分頁，兩題分開、不互相覆寫。
+// 選項與補充文字合成一份封包、一次送出（只寫一列）：點選項只是選取，按「送出」才送；
+// 選了卻沒按就離開頁面，pagehide 時補送一次（走 sendBeacon，只保證交給瀏覽器）。按「送出」則走 CORS fetch 讀回應，伺服器回 ok:true 才記「這筆訂單已送過」到 localStorage，重整頁面不再出現第二題。
 (function () {
   var box = document.getElementById('assistBox');
   if (!box) return;
   var chosen = '';
+  var state = 'idle';   // idle → sending → sent；只有 idle 可以送出，失敗會退回 idle 讓買家重試
+  var btns = box.querySelectorAll('.assist-btn');
+  var send = document.getElementById('assistSend');
+  var input = document.getElementById('assistDetail');
+  var errEl = document.getElementById('assistError');
+  var stEl = document.getElementById('assistStatus');
   function ref() {
     var t = new URLSearchParams(window.location.search).get('tradeNo') || '';
     return /^DIO[0-9A-F]{17}$/.test(t) ? t : '';
   }
-  function post(extra) {
+  var sentKey = ref() ? 'assist_sent_' + ref() : '';
+  try { if (sentKey && localStorage.getItem(sentKey)) { state = 'sent'; box.dataset.sent = '1'; } } catch (e) {}
+
+  function submit(leaving) {
+    if (!chosen || state !== 'idle') return;
+    state = 'sending';
+    send.disabled = true;
+    errEl.classList.remove('show');
+    stEl.classList.add('show');
     var p = {kind: 'purchase_assist', page: 'thank-you-online-course', order_ref: ref(), survey_v: '2', user_agent: navigator.userAgent, assist_answer: chosen};
-    for (var k in extra) p[k] = extra[k];
-    if (!SURVEY_ENDPOINT || SURVEY_ENDPOINT.startsWith('REPLACE')) { console.log('assist payload', p); return; }
-    try {
-      if (navigator.sendBeacon && navigator.sendBeacon(SURVEY_ENDPOINT, new Blob([JSON.stringify(p)], {type: 'text/plain;charset=utf-8'}))) return;
-    } catch (e) {}
-    try {
-      fetch(SURVEY_ENDPOINT, {method: 'POST', mode: 'no-cors', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify(p)});
-    } catch (e) {}
-  }
-  box.querySelectorAll('.assist-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      if (chosen) return;
-      chosen = btn.dataset.assist;
-      box.querySelectorAll('.assist-btn').forEach(function (b) { if (b !== btn) b.disabled = true; });
-      btn.style.background = 'var(--gold)';
-      btn.style.color = 'var(--dark)';
-      btn.style.borderColor = 'var(--gold)';
-      post({});
+    var v = (input.value || '').trim();
+    if (v) p.assist_detail = v.slice(0, 300);
+    deliverSurvey(p, function (ok, queued) {
+      stEl.classList.remove('show');
+      if (!ok) {
+        state = 'idle';
+        send.disabled = false;
+        errEl.classList.add('show');
+        return;
+      }
+      state = 'sent';
+      if (sentKey && !queued) { try { localStorage.setItem(sentKey, '1'); } catch (e) {} }   // 只有伺服器回 ok:true 才記；pagehide 只是交給瀏覽器，不算
+      box.classList.add('sent');
       document.getElementById('assistDone').classList.add('show');
+    }, leaving === true);
+  }
+
+  btns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (state !== 'idle') return;
+      chosen = btn.dataset.assist;
+      btns.forEach(function (b) {
+        var on = b === btn;
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.style.background = on ? 'var(--gold)' : '';
+        b.style.color = on ? 'var(--dark)' : '';
+        b.style.borderColor = on ? 'var(--gold)' : '';
+      });
+      send.disabled = false;
     });
   });
-  var send = document.getElementById('assistSend');
-  var input = document.getElementById('assistDetail');
-  send.addEventListener('click', function () {
-    var v = (input.value || '').trim();
-    if (!v) return;
-    post({assist_detail: v.slice(0, 300)});
-    send.disabled = true;
-    input.disabled = true;
-    document.getElementById('assistDone').classList.add('show');
-  });
+  send.addEventListener('click', function () { submit(false); });
+  // 只掛 pagehide，不掛 visibilitychange：補充欄要人貼搜尋詞或文章網址，買家本來就會切到別的分頁去複製，
+  // 把切分頁當成離開會把半填的答案送出並鎖死（送出後表單隱藏、旗標寫入），代價比漏收幾筆選填答案重。
+  // 換來的限制：手機把分頁丟到背景後被系統直接回收時 pagehide 可能不觸發，那種情況這筆選填答案就收不到。
+  window.addEventListener('pagehide', function () { if (chosen && state === 'idle') submit(true); });
 })();
 </script>
 
