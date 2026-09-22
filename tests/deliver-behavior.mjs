@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
 
-const PAGES = ["index.html", "inperson/index.html", "consult/index.html"];
+const PAGES = ["index.html", "inperson/index.html", "levelh/index.html", "consult/index.html"];
 const tick = () => new Promise((r) => setImmediate(r));
 
 function load(html) {

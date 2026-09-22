@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>報名成功！歡迎加入幽默自信表達課</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #F2A900;
+    --gold-light: #FFF3D6;
+    --dark: #1A1A2E;
+    --dark2: #16213E;
+    --white: #FFFFFF;
+    --gray: #A0A0B0;
+    --green: #2ECC71;
+    --red: #E74C3C;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--dark);
+    color: var(--white);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
+
+  /* ===== SUCCESS BADGE ===== */
+  .success-badge {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .success-badge .checkmark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-bottom: 16px;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .success-badge .checkmark svg {
+    width: 36px;
+    height: 36px;
+    fill: none;
+    stroke: var(--white);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .success-badge h1 {
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  .success-badge p {
+    font-size: 16px;
+    color: var(--gray);
+  }
+
+  /* ===== INFO BOX ===== */
+  .info-box {
+    background: var(--dark2);
+    border: 1px solid rgba(242,169,0,0.2);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 28px;
+  }
+
+  .info-box h3 {
+    font-size: 16px;
+    color: var(--gold);
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+
+  .info-box p {
+    font-size: 14px;
+    color: #D0D0E0;
+    margin-bottom: 8px;
+  }
+
+  .info-box p strong {
+    color: var(--white);
+  }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(242,169,0,0.3), transparent);
+    margin: 32px 0;
+  }
+
+  /* ===== SURVEY ===== */
+  .survey-section {
+    background: linear-gradient(135deg, rgba(242,169,0,0.06), rgba(255,140,0,0.04));
+    border: 1px solid rgba(242,169,0,0.25);
+    border-radius: 14px;
+    padding: 24px 22px;
+    margin-bottom: 32px;
+  }
+  .survey-section h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--white);
+  }
+  .survey-section .survey-sub {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 18px;
+  }
+  .survey-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .survey-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .survey-btn:hover {
+    background: rgba(242,169,0,0.12);
+    border-color: var(--gold);
+    transform: translateY(-1px);
+  }
+  .survey-btn:disabled {
+    cursor: default;
+    opacity: 0.3;
+    transform: none;
+  }
+  .survey-btn .icon {
+    font-size: 18px;
+  }
+  .survey-thanks {
+    text-align: center;
+    padding: 20px 0;
+    color: var(--gold);
+    font-size: 16px;
+    font-weight: 600;
+    display: none;
+  }
+  .survey-thanks.show { display: block; }
+  /* 購前助攻（選填第二題，2026-09-19） */
+  .assist-box { display: none; margin-top: 18px; padding-top: 16px; border-top: 1px dashed rgba(255,255,255,0.15); }
+  .assist-box.show { display: block; }
+  .assist-box h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: var(--white); }
+  .assist-box .survey-sub { margin-bottom: 12px; }
+  .assist-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: var(--white); font-size: 13px; font-weight: 500; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: all 0.15s; text-align: left; font-family: inherit; }
+  .assist-btn:hover { background: rgba(242,169,0,0.12); border-color: var(--gold); }
+  .assist-btn:disabled { cursor: default; opacity: 0.3; }
+  .assist-detail { display: flex; gap: 8px; margin-top: 12px; }
+  .assist-detail input { flex: 1; min-width: 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: var(--white); border-radius: 10px; padding: 10px 12px; font-size: 14px; font-family: inherit; }
+  .assist-detail input::placeholder { color: var(--gray); }
+  .assist-detail button { flex: none; background: rgba(242,169,0,0.12); border: 1px solid var(--gold); color: var(--white); border-radius: 10px; padding: 10px 14px; font-size: 14px; font-family: inherit; cursor: pointer; }
+  .assist-detail button:disabled, .assist-detail input:disabled { opacity: 0.4; cursor: default; }
+  .assist-done { display: none; text-align: center; color: var(--gold); font-size: 14px; margin-top: 10px; }
+  .assist-done.show { display: block; }
+  .form-error { display: none; text-align: center; color: #ff8a80; font-size: 14px; margin-top: 10px; }
+  .form-error.show { display: block; }
+  .form-status { display: none; text-align: center; color: rgba(255,255,255,0.6); font-size: 14px; margin-top: 10px; }
+  .form-status.show { display: block; }
+  .assist-box.sent > :not(.assist-done) { display: none; }
+
+  /* ===== UPSELL SECTION ===== */
+  .upsell-section {
+    background: var(--dark2);
+    border: 1px solid rgba(242,169,0,0.2);
+    border-radius: 16px;
+    padding: 32px 24px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .upsell-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), #FF6B35);
+  }
+  .upsell-tag {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--dark);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+  .upsell-section h2 {
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  .upsell-section h2 span { color: var(--gold); }
+  .upsell-text {
+    font-size: 15px;
+    color: #D0D0E0;
+    margin-bottom: 16px;
+  }
+  .upsell-text strong { color: var(--white); }
+
+  /* ===== QUOTE BOX ===== */
+  .quote-box {
+    background: rgba(242, 169, 0, 0.08);
+    border-left: 3px solid var(--gold);
+    padding: 16px 20px;
+    margin: 24px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .quote-box p {
+    font-size: 14px;
+    color: #D0D0E0;
+    font-style: italic;
+  }
+  .quote-box .author {
+    font-size: 13px;
+    color: var(--gold);
+    font-style: normal;
+    margin-top: 8px;
+  }
+
+  /* ===== COURSE CARD ===== */
+  .course-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .course-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .course-info {
+    font-size: 14px;
+    color: var(--gray);
+    margin-bottom: 8px;
+  }
+  .course-info strong { color: var(--white); }
+  .price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+  }
+  .price-original {
+    font-size: 16px;
+    color: var(--gray);
+    text-decoration: line-through;
+  }
+  .price-current {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--gold);
+  }
+  .discount-note {
+    font-size: 13px;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+
+  /* ===== CTA BUTTON ===== */
+  .cta-btn {
+    display: block;
+    width: 100%;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, var(--gold), #FF8C00);
+    color: var(--dark);
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(242, 169, 0, 0.3);
+  }
+  .secondary-link {
+    display: block;
+    text-align: center;
+    margin-top: 14px;
+    color: var(--gold);
+    font-size: 14px;
+    text-decoration: none;
+  }
+  .secondary-link:hover { text-decoration: underline; }
+  .cta-note { text-align: center; font-size: 13px; line-height: 1.7; color: var(--gray); margin-top: 14px; }
+
+  /* ===== GUARANTEE ===== */
+  .guarantee {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 16px;
+    background: rgba(46, 204, 113, 0.08);
+    border-radius: 8px;
+  }
+  .guarantee-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    color: var(--green);
+  }
+  .guarantee p {
+    font-size: 13px;
+    color: #A0D0B0;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .footer p {
+    font-size: 13px;
+    color: var(--gray);
+  }
+
+  .footer a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes fadeUp {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  .fade-up {
+    animation: fadeUp 0.6s ease-out forwards;
+    opacity: 0;
+  }
+
+  .fade-up-d1 { animation-delay: 0.1s; }
+  .fade-up-d2 { animation-delay: 0.2s; }
+  .fade-up-d3 { animation-delay: 0.4s; }
+  .fade-up-d4 { animation-delay: 0.6s; }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 480px) {
+    .container { padding: 32px 16px 48px; }
+    .success-badge h1 { font-size: 24px; }
+    .info-box { padding: 20px 18px; }
+    .upsell-section { padding: 24px 18px; }
+    .upsell-section h2 { font-size: 20px; }
+    .price-current { font-size: 24px; }
+    .cta-btn { font-size: 16px; padding: 16px 20px; }
+  }
+</style>
+<!-- Meta Pixel Code (補 Teachify 端漏的 Purchase 事件，2026-05-07 加) -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '863573241308280');
+fbq('track', 'PageView');
+// 實體課感謝頁 = 已購課，fire Purchase 事件給 Meta 廣告優化用
+// Purchase 只在 URL 帶 tradeNo 時發，eventID=tradeNo 供 Meta 與伺服器端 CAPI 事件去重（2026-07-14 改）
+// 沒 tradeNo 不發：伺服器端（Teachify webhook → CAPI）必送，瀏覽器端重複發只會灌水
+// localStorage 防同一訂單重整頁面重複觸發
+(function(){
+  var tn = new URLSearchParams(window.location.search).get('tradeNo') || '';
+  if (!tn || tn.charAt(0) === '{') return;
+  var k = 'fb_purchase_fired_' + tn;
+  try { if (localStorage.getItem(k)) return; } catch(e){}
+  fbq('track', 'Purchase', {currency: 'TWD', value: 8600, content_name: 'Inperson Course Humor Confidence', content_type: 'product', content_ids: ['levelh']}, {eventID: tn});
+  try { localStorage.setItem(k, '1'); } catch(e){}
+})();
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=863573241308280&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel Code -->
+<!-- GA4 購買到站備援（2026-09-19 加，同日依 Codex 複審改版）
+     Teachify 的 /redirect 頁有時在 GA4 送出前就跳轉，6-8 月有 2 筆訂單買家到了本頁填問卷、GA4 卻沒有 purchase。
+     這裡改送非電商事件 purchase_backup_observed：本頁在 github.io、client_id 與 dioacademy.tw 不同，
+     GA4 的 transaction_id 去重只在同一使用者內成立，所以不能再送原生 purchase（會讓 purchase 關鍵事件與交易數重複）。
+     只送 G-ES6BX92WL7（報表資源），不帶 value 與 items；訂單編號放在 page_location 與 transaction_id，報表以付款正本去重。 -->
+<script>
+window.dioGaPurchaseBackup = function (tn) {
+  if (!/^DIO[0-9A-F]{17}$/.test(tn || '')) return false;   // 只認 Teachify 真訂單編號
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function () { dataLayer.push(arguments); };
+  if (!document.querySelector('script[data-dio-gtag]')) {
+    var s = document.createElement('script');
+    s.async = true; s.setAttribute('data-dio-gtag', '1');
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=G-JC7428L3DP';   // 載入器；G-ES6BX92WL7 沒有獨立載入器
+    document.head.appendChild(s);
+  }
+  var loc = location.origin + location.pathname + '?tradeNo=' + tn;   // 只留訂單編號，其他網址參數不送 GA
+  gtag('js', new Date());
+  gtag('config', 'G-ES6BX92WL7', {send_page_view: false, page_location: loc});
+  gtag('event', 'purchase_backup_observed', {
+    send_to: 'G-ES6BX92WL7',
+    page_location: loc,   // 攔截實測發現只靠 config 的 page_location 不會套到事件上，事件本身也要帶，報表才抽得到 tradeNo
+    transaction_id: tn,
+    backup_source: 'thankyou_page',
+    transport_type: 'beacon'
+    // 刻意不記「這筆已送過」的旗標：event_callback 只證明 gtag 已派送，不證明 GA4 收到，
+    // 攔追蹤的瀏覽器有可能 callback 跑了、collect 請求卻被擋，旗標一寫就永久不再補送，
+    // 而那正是最需要這個備援事件的買家。改成每次載入都送，重複由報表按訂單編號去重（本事件不帶金額、非關鍵事件）。
+  });
+  return true;
+};
+window.dioGaPurchaseBackup(new URLSearchParams(window.location.search).get('tradeNo') || '');
+</script>
+<!-- End GA4 購買到站備援 -->
+</head>
+<body>
+
+<div class="container">
+
+  <!-- SUCCESS BADGE -->
+  <div class="success-badge fade-up">
+    <div class="checkmark">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <h1>報名成功！</h1>
+    <p>Hi～我是東區德，感謝你報名「幽默自信表達課（11 月兩日班）」</p>
+  </div>
+
+  <!-- COURSE INFO -->
+  <div class="info-box fade-up fade-up-d1">
+    <h3>課程資訊</h3>
+    <p><strong>課程時間</strong>｜11/15（日）、11/22（日）AM 10:00 - 17:00，<strong>AM 10:00 準時開始上課</strong></p>
+    <p><strong>課程地點</strong>｜<a href="https://www.google.com/maps/place/%E5%B7%B7%E5%BC%84%E7%A9%BA%E9%96%93+Alley+Space/@25.0518992,121.5129555,16z/data=!3m1!4b1!4m6!3m5!1s0x3442a90a89c75ec9:0x57b057097819226b!8m2!3d25.0518944!4d121.5178264!16s%2Fg%2F11r0wl_77t?entry=ttu&amp;g_ep=EgoyMDI2MDYwMy4xIKXMDSoASAFQAw%3D%3D" target="_blank" style="color:var(--gold)">巷弄空間（台北市大同區承德路一段 69 巷 11 號 2 樓）</a>，近中山站 6 號出口</p>
+  </div>
+
+  <!-- REMINDERS -->
+  <div class="info-box fade-up fade-up-d1">
+    <h3>行前提醒</h3>
+    <p>1. 兩個上課日中間隔一週，那一週是<strong>實戰週</strong>：帶著 Day 1 的作業回真實生活練，Day 2 帶著結果回教室。兩天都要到場喔。</p>
+    <p>2. 當天穿舒服的衣服就好。場地有飲水器，可自備水壺。</p>
+    <p>3. 開課前一天，你會收到行前通知信。</p>
+    <p>4. 有任何問題，直接回信到 <a href="mailto:dio3212@gmail.com" style="color:var(--gold)">dio3212@gmail.com</a>，我會親自回覆，我們到時見！</p>
+  </div>
+
+  <!-- SURVEY -->
+  <div class="survey-section fade-up fade-up-d2" id="surveyBox">
+    <h3>幫我一個忙｜你第一次是從哪裡知道東區德的？</h3>
+    <p class="survey-sub">點一下就好，你的答案會幫我很大的忙。</p>
+    <div class="survey-grid" id="surveyGrid">
+      <button class="survey-btn" data-answer="Threads"><span class="icon">🧵</span>Threads</button>
+      <button class="survey-btn" data-answer="YouTube"><span class="icon">🎬</span>YouTube</button>
+      <button class="survey-btn" data-answer="Instagram"><span class="icon">📷</span>Instagram</button>
+      <button class="survey-btn" data-answer="Facebook"><span class="icon">📘</span>Facebook</button>
+      <button class="survey-btn" data-answer="Email 電子報"><span class="icon">📧</span>Email 電子報</button>
+      <button class="survey-btn" data-answer="Meta 廣告"><span class="icon">💰</span>Meta 廣告</button>
+      <button class="survey-btn" data-answer="朋友介紹"><span class="icon">👥</span>朋友介紹</button>
+      <button class="survey-btn" data-answer="Podcast / 媒體"><span class="icon">🎙️</span>Podcast / 媒體</button>
+      <button class="survey-btn" data-answer="Google 搜尋"><span class="icon">🔍</span>Google 搜尋</button>
+      <button class="survey-btn" data-answer="ChatGPT / AI 問答"><span class="icon">🤖</span>ChatGPT / AI 問答</button>
+      <button class="survey-btn" data-answer="其他"><span class="icon">✨</span>其他</button>
+    </div>
+    <div class="form-error" id="surveyError" role="alert">沒有送出成功，請確認網路後再點一次。</div>
+    <div class="form-status" id="surveyStatus" role="status" aria-live="polite">送出中…</div>
+    <div class="survey-thanks" id="surveyThanks">
+      謝謝你 🙏 你的答案幫了大忙
+    </div>
+
+    <!-- 購前助攻（選填第二題，2026-09-19）：另存「購前助攻」分頁，第一題的答案欄維持「第一次從哪裡知道」 -->
+    <div class="assist-box" id="assistBox">
+      <h4>再一題（選填）｜這次決定購買前，哪一個幫你最多？</h4>
+      <p class="survey-sub">可以跟上一題一樣，也可以不一樣。選好後按「送出」。</p>
+      <div class="survey-grid">
+        <button class="assist-btn" data-assist="部落格文章">部落格文章</button>
+        <button class="assist-btn" data-assist="Google 搜尋">Google 搜尋</button>
+        <button class="assist-btn" data-assist="ChatGPT / AI 問答">ChatGPT / AI 問答</button>
+        <button class="assist-btn" data-assist="Email 電子報">Email 電子報</button>
+        <button class="assist-btn" data-assist="Threads">Threads</button>
+        <button class="assist-btn" data-assist="YouTube">YouTube</button>
+        <button class="assist-btn" data-assist="Facebook">Facebook</button>
+        <button class="assist-btn" data-assist="直播">直播</button>
+        <button class="assist-btn" data-assist="課程介紹頁或免費試看">課程介紹頁或免費試看</button>
+        <button class="assist-btn" data-assist="學員見證或朋友推薦">學員見證或朋友推薦</button>
+        <button class="assist-btn" data-assist="一對一諮詢">一對一諮詢</button>
+        <button class="assist-btn" data-assist="其他">其他</button>
+      </div>
+      <div class="assist-detail">
+        <input type="text" id="assistDetail" maxlength="300" placeholder="如果是搜尋或問 AI，還記得打了什麼嗎？也可以貼文章網址（選填）">
+        <button type="button" id="assistSend" disabled>送出</button>
+      </div>
+      <div class="form-error" id="assistError" role="alert">沒有送出成功，請確認網路後再按一次「送出」。</div>
+      <div class="form-status" id="assistStatus" role="status" aria-live="polite">送出中…</div>
+      <div class="assist-done" id="assistDone">收到，謝謝你。</div>
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="divider"></div>
+
+  <!-- UPSELL: 線上課加購 -->
+  <div class="upsell-section fade-up fade-up-d2">
+    <div class="upsell-tag">實體課學員專屬</div>
+
+    <h2>教室裡練的聲音、幽默和故事<br><span>用到約會上，威力加倍</span></h2>
+
+    <p class="upsell-text">
+      這兩天你會練出自己的聲音、自己的哏，<br>
+      還有一段 2 分鐘就講得完的個人故事。<br>
+      放進約會聊天裡，就是對方記得住你的理由。
+    </p>
+
+    <p class="upsell-text">
+      《即興約會實戰系統》補上約會的整條流程，<br>
+      <strong>交友軟體開場、網聊回訊、約會現場</strong>，<br>
+      52 個單元帶你從心態到實戰，一路走到把人約出來。
+    </p>
+  </div>
+
+  <!-- STUDENT QUOTE -->
+  <div class="quote-box fade-up fade-up-d2">
+    <p>「用裡面的技巧，加上原本就會的即興，聊天變得很自然，也讓我順利交到女朋友了！」</p>
+    <div class="author">線上課、即興實體課學員 寶劍</div>
+  </div>
+
+  <!-- COURSE CARD -->
+  <div class="course-card fade-up fade-up-d3">
+    <h3>2026 全新升級．即興約會實戰系統</h3>
+    <p class="course-info">🎬 <strong>52 個單元</strong>、超過 8 小時系統教學｜線上無限回放</p>
+    <p class="course-info">🎧 附 Podcast 純聽版，通勤隨時聽</p>
+    <p class="course-info">🛡️ 30 天不滿意，全額退費</p>
+
+    <div class="price-row">
+      <span class="price-original">NT$5,300</span>
+      <span class="price-current">NT$4,300</span>
+    </div>
+    <p class="discount-note">✦ 實體課學員專屬，折扣碼已自動帶入，現折 NT$1,000</p>
+
+    <a href="https://dioacademy.tw/checkout?planId=e0495d20-8f7b-4b6c-938a-22f5584e10e2&amp;coupon=1000online" class="cta-btn">
+      用 NT$4,300 加購線上課 →
+    </a>
+
+    <a href="https://dioacademy.tw/courses/improvdating" class="secondary-link" target="_blank" rel="noopener">先看課程介紹 →</a>
+
+    <div class="guarantee">
+      <svg class="guarantee-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+      <p>30 天不滿意保證：上完課若覺得無效，30 天內無條件全額退費。</p>
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="divider"></div>
+
+  <!-- UPSELL 2: 脫單陪跑計畫（2026-09-22 加，連無價格公開頁） -->
+  <div class="upsell-section fade-up fade-up-d3">
+    <div class="upsell-tag">想把這份自信帶進感情的人</div>
+
+    <h2>課堂上把好感說出口<br><span>約會現場，有人陪你打</span></h2>
+
+    <p class="upsell-text">
+      如果你報這堂課，心裡有一部分是為了感情，這段寫給你。
+    </p>
+
+    <p class="upsell-text">
+      Day 2 你會練好感怎麼得體說出口、界線訊號怎麼讀。<br>
+      下一步是把它帶進一場場真正的約會，<br>
+      那時候最缺的，是約完有人幫你拆：哪一步做對、哪一步踩雷。
+    </p>
+
+    <p class="upsell-text">
+      《脫單陪跑計畫》是我一對一陪你跑 90 天。<br>
+      約會前幫你校準，約完當天陪你覆盤，<br>
+      聊天卡住就截圖傳我，<strong>24 小時內給你方向</strong>。
+    </p>
+  </div>
+
+  <div class="quote-box fade-up fade-up-d3">
+    <p>「你早一點，就少錯過了很多的機會」</p>
+    <div class="author">陪跑學員 L 先生｜母胎單身 30 年，3 次約會交到女朋友</div>
+  </div>
+
+  <div class="course-card fade-up fade-up-d3">
+    <h3>脫單陪跑計畫．90 天一對一</h3>
+    <p class="course-info">✓ <strong>6 次</strong>一對一深度諮詢，每次 90 到 120 分鐘</p>
+    <p class="course-info">✓ 約會前簡報、約會後覆盤，各 <strong>8 次</strong></p>
+    <p class="course-info">✓ 90 天訊息健檢，無限次</p>
+    <p class="course-info">✓ 認真跑完 90 天約不到 3 次會，免費續約帶到約到為止</p>
+    <p class="course-info">✓ 全程我親自帶，每個月只收 3 位</p>
+
+    <a href="https://dioacademy.tw/vip-program/?src=thankyou_levelh" class="cta-btn" target="_blank" rel="noopener">
+      看 90 天陪跑怎麼帶你 →
+    </a>
+
+    <p class="cta-note">頁面裡可以預約 30 分鐘免費諮詢。<br>不收費、不硬賣，不適合我直接跟你說。</p>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer fade-up fade-up-d4">
+    <p>有任何問題歡迎來信 <a href="mailto:dio3212@gmail.com">dio3212@gmail.com</a></p>
+    <p style="margin-top: 8px;">© 2026 東區德學院</p>
+  </div>
+
+</div>
+
+<script>
+const SURVEY_ENDPOINT = "https://script.google.com/macros/s/AKfycbyK4jCiup8xuJTX6eGFEDLXIX9zqtqnoWbzVPnSCrjCvK9cwLey6871oFyAjkR8D2bFVA/exec";
+
+// 送出封包給 Apps Script，分兩種情境。cb 只會呼叫一次：cb(ok, queued)，queued＝true 代表只交給瀏覽器、沒有伺服器確認，
+// 呼叫端不可據此寫「已送過」的永久旗標。
+// ① 買家按按鈕、頁面還開著：用 CORS fetch 送並讀回應。Apps Script 端點先轉址再回 JSON，兩跳都帶 Access-Control-Allow-Origin: *（2026-09-20 實測），
+//    成功回 {"ok":true,"type":"survey"|"assist"}，拒絕回 {"ok":false,...}，腳本例外則是 HTML 錯誤頁。只有明確的 ok:true 才算送達；
+//    網路失敗、逾時、非 2xx、非 JSON、ok:false 一律 cb(false)，呼叫端要還原按鈕並提示重試，不可顯示「收到」。
+// ② leaving＝true（頁面正在關閉）：沒有畫面可更新、回應也讀不到，改用 sendBeacon（排進瀏覽器佇列就算），排不進去才用 no-cors fetch keepalive。
+//    這條路只能保證「已交給瀏覽器」，不保證伺服器寫入；瀏覽器沒有 fetch 時也走這條。
+function deliverSurvey(payload, cb, leaving) {
+  if (!SURVEY_ENDPOINT || SURVEY_ENDPOINT.startsWith('REPLACE')) {
+    console.log('SURVEY_ENDPOINT not set, would submit:', payload);
+    cb(true);
+    return;
+  }
+  const body = JSON.stringify(payload);
+  const headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+  if (leaving || typeof fetch !== 'function') {
+    try {
+      if (navigator.sendBeacon && navigator.sendBeacon(SURVEY_ENDPOINT, new Blob([body], {type: 'text/plain;charset=utf-8'}))) {
+        cb(true, true);
+        return;
+      }
+    } catch (e) { console.warn('sendBeacon failed', e); }
+    try {
+      fetch(SURVEY_ENDPOINT, { method: 'POST', mode: 'no-cors', keepalive: true, headers: headers, body: body })
+        .then(() => cb(true, true), (e) => { console.warn('fetch failed', e); cb(false); });
+    } catch (e) { console.warn('fetch failed', e); cb(false); }
+    return;
+  }
+  let done = false;
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  const timer = setTimeout(() => { if (ctl) ctl.abort(); finish(false); }, 20000);   // Apps Script 冷啟動實測 1.5-3.3 秒，20 秒還沒回就當失敗
+  function finish(ok) { if (done) return; done = true; clearTimeout(timer); cb(ok); }
+  try {
+    fetch(SURVEY_ENDPOINT, { method: 'POST', mode: 'cors', keepalive: true, headers: headers, body: body, signal: ctl ? ctl.signal : undefined })
+      .then((r) => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then((j) => finish(!!j && j.ok === true))
+      .catch((e) => { console.warn('survey delivery failed', e); finish(false); });
+  } catch (e) { console.warn('fetch failed', e); finish(false); }
+}
+
+// ===== 第一題：第一次從哪裡知道東區德 =====
+let surveyLocked = false;
+document.querySelectorAll('.survey-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (surveyLocked) return;   // 送出中或已送出，不接受第二次點擊
+    surveyLocked = true;
+    const answer = btn.dataset.answer;
+    const allBtns = document.querySelectorAll('.survey-btn');
+    allBtns.forEach(b => b.disabled = true);
+    btn.style.background = 'var(--gold)';
+    btn.style.color = 'var(--dark)';
+    btn.style.borderColor = 'var(--gold)';
+    document.getElementById('surveyError').classList.remove('show');
+    document.getElementById('surveyStatus').classList.add('show');
+
+    // 收集 URL params (Teachify 可能傳 ?email=, ?order_id= 等)
+    // 過濾字面占位符 ({customer_email}, {order_id}) 避免 Teachify 沒替換的 token 進來
+    const rawParams = Object.fromEntries(new URLSearchParams(window.location.search));
+    const urlParams = {};
+    let paramCount = 0;
+    for (const [k, v] of Object.entries(rawParams)) {
+      if (paramCount >= 20) break;   // keepalive 請求本體有 64 KiB 上限，異常長的網址不能讓送出永遠失敗
+      if (v && !(v.startsWith('{') && v.endsWith('}'))) { urlParams[k.slice(0, 60)] = v.slice(0, 300); paramCount++; }
+    }
+    const payload = {
+      answer,
+      url_params: urlParams,
+      referrer: document.referrer || '',
+      user_agent: navigator.userAgent,
+      page: 'thank-you-inperson-course-levelh',
+      timestamp: new Date().toISOString(),
+    };
+
+    deliverSurvey(payload, ok => {
+      document.getElementById('surveyStatus').classList.remove('show');
+      if (!ok) {
+        // 沒送出去：還原按鈕讓買家再點一次，不顯示謝謝
+        surveyLocked = false;
+        allBtns.forEach(b => b.disabled = false);
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+        document.getElementById('surveyError').classList.add('show');
+        return;
+      }
+      // 顯示謝謝
+      setTimeout(() => {
+        document.getElementById('surveyGrid').style.display = 'none';
+        document.getElementById('surveyThanks').classList.add('show');
+        var ab = document.getElementById('assistBox');
+        if (ab && ab.dataset.sent !== '1') ab.classList.add('show');   // 這筆訂單第二題已送過就不再顯示
+      }, 250);
+    });
+  });
+});
+
+// ===== 購前助攻（選填第二題，2026-09-19；同日 Codex 複審後改成單次提交）=====
+// 第一題的「答案」欄＝第一次從哪裡知道東區德；這一題送 kind=purchase_assist，Apps Script 另存「購前助攻」分頁，兩題分開、不互相覆寫。
+// 選項與補充文字合成一份封包、一次送出（只寫一列）：點選項只是選取，按「送出」才送；
+// 選了卻沒按就離開頁面，pagehide 時補送一次（走 sendBeacon，只保證交給瀏覽器）。按「送出」則走 CORS fetch 讀回應，伺服器回 ok:true 才記「這筆訂單已送過」到 localStorage，重整頁面不再出現第二題。
+(function () {
+  var box = document.getElementById('assistBox');
+  if (!box) return;
+  var chosen = '';
+  var state = 'idle';   // idle → sending → sent；只有 idle 可以送出，失敗會退回 idle 讓買家重試
+  var btns = box.querySelectorAll('.assist-btn');
+  var send = document.getElementById('assistSend');
+  var input = document.getElementById('assistDetail');
+  var errEl = document.getElementById('assistError');
+  var stEl = document.getElementById('assistStatus');
+  function ref() {
+    var t = new URLSearchParams(window.location.search).get('tradeNo') || '';
+    return /^DIO[0-9A-F]{17}$/.test(t) ? t : '';
+  }
+  var sentKey = ref() ? 'assist_sent_' + ref() : '';
+  try { if (sentKey && localStorage.getItem(sentKey)) { state = 'sent'; box.dataset.sent = '1'; } } catch (e) {}
+
+  function submit(leaving) {
+    if (!chosen || state !== 'idle') return;
+    state = 'sending';
+    send.disabled = true;
+    errEl.classList.remove('show');
+    stEl.classList.add('show');
+    var p = {kind: 'purchase_assist', page: 'thank-you-inperson-course-levelh', order_ref: ref(), survey_v: '2', user_agent: navigator.userAgent, assist_answer: chosen};
+    var v = (input.value || '').trim();
+    if (v) p.assist_detail = v.slice(0, 300);
+    deliverSurvey(p, function (ok, queued) {
+      stEl.classList.remove('show');
+      if (!ok) {
+        state = 'idle';
+        send.disabled = false;
+        errEl.classList.add('show');
+        return;
+      }
+      state = 'sent';
+      if (sentKey && !queued) { try { localStorage.setItem(sentKey, '1'); } catch (e) {} }   // 只有伺服器回 ok:true 才記；pagehide 只是交給瀏覽器，不算
+      box.classList.add('sent');
+      document.getElementById('assistDone').classList.add('show');
+    }, leaving === true);
+  }
+
+  btns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (state !== 'idle') return;
+      chosen = btn.dataset.assist;
+      btns.forEach(function (b) {
+        var on = b === btn;
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.style.background = on ? 'var(--gold)' : '';
+        b.style.color = on ? 'var(--dark)' : '';
+        b.style.borderColor = on ? 'var(--gold)' : '';
+      });
+      send.disabled = false;
+    });
+  });
+  send.addEventListener('click', function () { submit(false); });
+  // 只掛 pagehide，不掛 visibilitychange：補充欄要人貼搜尋詞或文章網址，買家本來就會切到別的分頁去複製，
+  // 把切分頁當成離開會把半填的答案送出並鎖死（送出後表單隱藏、旗標寫入），代價比漏收幾筆選填答案重。
+  // 換來的限制：手機把分頁丟到背景後被系統直接回收時 pagehide 可能不觸發，那種情況這筆選填答案就收不到。
+  window.addEventListener('pagehide', function () { if (chosen && state === 'idle') submit(true); });
+})();
+</script>
+
+</body>
+</html>

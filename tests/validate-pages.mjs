@@ -15,6 +15,12 @@ const pages = [
     browserPurchase: true,
   },
   {
+    path: "levelh/index.html",
+    pageName: "thank-you-inperson-course-levelh",
+    contentId: "levelh",
+    browserPurchase: true,
+  },
+  {
     // 諮詢頁刻意沒有瀏覽器 Meta Purchase（金額走 Teachify 端與 webhook CAPI，不在這頁認金額），
     // 所以也沒有 content_ids。放進清單是為了讓其餘共用檢查涵蓋它，並把「沒有 Purchase」寫成斷言而不是排除。
     path: "consult/index.html",
@@ -89,7 +95,7 @@ for (const page of pages) {
 }
 
 // GA4 購買到站備援（2026-09-19，Codex 複審後改版）：三頁都要有；只能送非電商事件，絕不能再送原生 purchase
-for (const path of ["index.html", "inperson/index.html", "consult/index.html"]) {
+for (const path of ["index.html", "inperson/index.html", "levelh/index.html", "consult/index.html"]) {
   const html = await readFile(path, "utf8");
   assert.equal(
     (html.match(/gtag\('event', 'purchase_backup_observed'/g) ?? []).length,
@@ -113,7 +119,7 @@ for (const path of ["index.html", "inperson/index.html", "consult/index.html"]) 
 }
 
 // 購前助攻（2026-09-19）：第一題問「第一次從哪裡知道」，第二題選填、另送 kind=purchase_assist，且不可掛 survey-btn（會被第一題的鎖定一起停用）
-for (const path of ["index.html", "inperson/index.html", "consult/index.html"]) {
+for (const path of ["index.html", "inperson/index.html", "levelh/index.html", "consult/index.html"]) {
   const html = await readFile(path, "utf8");
   assert.ok(html.includes("<h3>幫我一個忙｜你第一次是從哪裡知道東區德的？</h3>"), `${path} discovery question wording changed`);
   assert.ok(html.includes("kind: 'purchase_assist'"), `${path} is missing the assist payload kind`);
@@ -123,7 +129,7 @@ for (const path of ["index.html", "inperson/index.html", "consult/index.html"]) 
 }
 
 // 問卷單次提交與送達失敗處理（2026-09-19 Codex 複審第 3、4 項）：三頁共用同一套送出邏輯
-for (const path of ["index.html", "inperson/index.html", "consult/index.html"]) {
+for (const path of ["index.html", "inperson/index.html", "levelh/index.html", "consult/index.html"]) {
   const html = await readFile(path, "utf8");
   const count = (s) => html.split(s).length - 1;
   // 送出只有一個入口：sendBeacon／fetch 各只出現在 deliverSurvey 內，兩題共用，才不會各寫各的漏掉失敗處理

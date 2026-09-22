@@ -59,6 +59,7 @@ Static thank-you page
 .
 ├── index.html                 # Online-course purchase confirmation
 ├── inperson/index.html        # In-person-course confirmation
+├── levelh/index.html          # In-person humor & confidence course confirmation
 ├── tests/validate-pages.mjs   # Dependency-free regression checks
 └── .github/workflows/         # Pull-request and push validation
 ```
