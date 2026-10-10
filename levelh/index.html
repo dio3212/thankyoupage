@@ -711,14 +711,17 @@ function deliverSurvey(payload, cb, leaving) {
     send.disabled = true;
     errEl.classList.remove('show');
     stEl.classList.add('show');
-    sendQ1(leaving, function (ok1) {
-      if (!ok1) { fail(); return; }
-      sendQ2(leaving, function (ok2) {
-        if (!ok2) { fail(); return; }
-        stEl.classList.remove('show');
-        finishAll();
-      });
-    });
+    // 兩題並行送（Codex 複審：串行會在離頁時漏掉第 2 題）；兩題都回來才判成敗，失敗只重送沒成功的那題
+    var pend = 2, bad = false;
+    function settled(ok) {
+      if (!ok) bad = true;
+      if (--pend > 0) return;
+      if (bad) { fail(); return; }
+      stEl.classList.remove('show');
+      finishAll();
+    }
+    sendQ1(leaving, settled);
+    sendQ2(leaving, settled);
   }
   function fail() {
     state = 'idle';
@@ -744,7 +747,12 @@ function deliverSurvey(payload, cb, leaving) {
   send.addEventListener('click', function () { submit(false); });
   // 只掛 pagehide，不掛 visibilitychange：補充欄要人貼搜尋詞或文章網址，買家本來就會切到別的分頁去複製，
   // 把切分頁當成離開會把半填的答案送出並鎖死。
-  window.addEventListener('pagehide', function () { if (state === 'idle') submit(true); });
+  // 離頁補送：兩題都選了就整份送；只選了第 1 題也把第 1 題送出，避免必答門檻讓只答一題的人完全沒有紀錄
+  window.addEventListener('pagehide', function () {
+    if (state !== 'idle') return;
+    if ((sent.q1 || chosen.q1) && (sent.q2 || chosen.q2)) { submit(true); return; }
+    if (chosen.q1 && !sent.q1) { state = 'sending'; sendQ1(true, function () {}); }
+  });
   refresh();
 })();
 </script>

@@ -134,7 +134,7 @@ for (const path of ALL) {
   assert.ok(html.includes("var ready = (sent.q1 || chosen.q1) && (sent.q2 || chosen.q2);"), `${path} submit must require both answers`);
   assert.ok(html.includes("if (!((sent.q1 || chosen.q1) && (sent.q2 || chosen.q2))) return;"), `${path} submit() must also guard both answers (pagehide path)`);
   assert.ok(html.includes("kind: 'purchase_assist'"), `${path} is missing the Q2 payload kind`);
-  assert.ok(!/order_ref[^\n]*trade_no|\btrade_no\s*:/.test(html.slice(html.indexOf("purchase_assist"))), `${path} Q2 payload must not carry trade_no (would hit the webhook branch)`);
+  assert.ok(!/order_ref[^\n]*trade_no|["']?\btrade_no["']?\s*:/.test(html.slice(html.indexOf("purchase_assist"))), `${path} Q2 payload must not carry trade_no (would hit the webhook branch)`);
   // 送出入口與送達處理
   assert.equal(count("function deliverSurvey(payload, cb, leaving)"), 1, `${path} must define deliverSurvey once`);
   assert.equal(count("deliverSurvey(payload, function (ok, queued)") + count("deliverSurvey(p, function (ok, queued)"), 2, `${path} both questions must submit through deliverSurvey`);
@@ -153,8 +153,9 @@ for (const path of ALL) {
   for (const id of ['id="surveyStatus"', 'id="surveyError"']) assert.ok(html.includes(id), `${path} is missing ${id}`);
   // 兩題依序送：第 1 題成功才送第 2 題；失敗只重送沒成功的
   assert.ok(html.includes("if (sent.q1) return next(true);") && html.includes("if (sent.q2) return next(true);"), `${path} must skip a question that was already delivered`);
-  assert.ok(html.includes("if (!ok1) { fail(); return; }"), `${path} must stop and allow retry when Q1 fails`);
-  assert.ok(html.includes("if (!ok2) { fail(); return; }"), `${path} must allow retry when Q2 fails`);
+  assert.ok(html.includes("sendQ1(leaving, settled);") && html.includes("sendQ2(leaving, settled);"), `${path} must send both questions in parallel (serial loses Q2 on page leave)`);
+  assert.ok(html.includes("if (bad) { fail(); return; }"), `${path} must allow retry when either question fails`);
+  assert.ok(html.includes("if (chosen.q1 && !sent.q1) { state = 'sending'; sendQ1(true, function () {}); }"), `${path} pagehide must still flush a Q1-only answer`);
   assert.equal(count("send.addEventListener('click', function () { submit(false); })"), 1, `${path} send button must submit with leaving=false`);
   assert.equal(count("submit(true)"), 1, `${path} only the pagehide flush may submit with leaving=true`);
   assert.ok(html.includes("if (state !== 'idle') return;"), `${path} submit must be guarded against repeat sends`);
