@@ -125,14 +125,15 @@ for (const path of ALL) {
   const count = (s) => html.split(s).length - 1;
   assert.ok(html.includes("第 1 題｜你第一次是從哪裡知道東區德的？"), `${path} Q1 wording changed`);
   assert.ok(html.includes("第 2 題｜這次決定購買前，哪一個幫你最多？"), `${path} Q2 wording changed`);
-  assert.equal(count('<span class="req">必答</span>'), 2, `${path} both questions must be labelled required`);
+  assert.equal(count('<span class="req">選填</span>'), 2, `${path} both questions must be labelled optional`);
   assert.equal(count('data-q="q1"'), 11, `${path} must have 11 Q1 options`);
   assert.equal(count('data-q="q2"'), 12, `${path} must have 12 Q2 options`);
   assert.ok(!html.includes('class="assist-btn"'), `${path} Q2 must use the same .survey-btn as Q1 (equal size)`);
   assert.ok(!html.includes('id="assistBox"'), `${path} old hidden second-question box must be gone`);
   assert.ok(html.includes('id="surveySend" disabled'), `${path} submit must start disabled`);
-  assert.ok(html.includes("var ready = (sent.q1 || chosen.q1) && (sent.q2 || chosen.q2);"), `${path} submit must require both answers`);
-  assert.ok(html.includes("if (!((sent.q1 || chosen.q1) && (sent.q2 || chosen.q2))) return;"), `${path} submit() must also guard both answers (pagehide path)`);
+  assert.ok(html.includes("var ready = pending();"), `${path} submit must enable when at least one unsent answer is chosen`);
+  assert.ok(html.includes("if (!pending()) return;"), `${path} submit() must guard against an empty send (pagehide path)`);
+  assert.ok(html.includes("function pending() { return (!!chosen.q1 && !sent.q1) || (!!chosen.q2 && !sent.q2); }"), `${path} pending() changed`);
   assert.ok(html.includes("kind: 'purchase_assist'"), `${path} is missing the Q2 payload kind`);
   assert.ok(!/order_ref[^\n]*trade_no|["']?\btrade_no["']?\s*:/.test(html.slice(html.indexOf("purchase_assist"))), `${path} Q2 payload must not carry trade_no (would hit the webhook branch)`);
   // 送出入口與送達處理
@@ -152,10 +153,9 @@ for (const path of ALL) {
   assert.ok(html.includes("typeof AbortController === 'function'"), `${path} timeout must abort the request when AbortController exists`);
   for (const id of ['id="surveyStatus"', 'id="surveyError"']) assert.ok(html.includes(id), `${path} is missing ${id}`);
   // 兩題依序送：第 1 題成功才送第 2 題；失敗只重送沒成功的
-  assert.ok(html.includes("if (sent.q1) return next(true);") && html.includes("if (sent.q2) return next(true);"), `${path} must skip a question that was already delivered`);
+  assert.ok(html.includes("if (sent.q1 || !chosen.q1) return next(true);") && html.includes("if (sent.q2 || !chosen.q2) return next(true);"), `${path} must skip a question that is delivered or unanswered`);
   assert.ok(html.includes("sendQ1(leaving, settled);") && html.includes("sendQ2(leaving, settled);"), `${path} must send both questions in parallel (serial loses Q2 on page leave)`);
   assert.ok(html.includes("if (bad) { fail(); return; }"), `${path} must allow retry when either question fails`);
-  assert.ok(html.includes("if (chosen.q1 && !sent.q1) { state = 'sending'; sendQ1(true, function () {}); }"), `${path} pagehide must still flush a Q1-only answer`);
   assert.equal(count("send.addEventListener('click', function () { submit(false); })"), 1, `${path} send button must submit with leaving=false`);
   assert.equal(count("submit(true)"), 1, `${path} only the pagehide flush may submit with leaving=true`);
   assert.ok(html.includes("if (state !== 'idle') return;"), `${path} submit must be guarded against repeat sends`);

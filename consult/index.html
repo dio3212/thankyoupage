@@ -439,12 +439,12 @@ window.dioGaPurchaseBackup(new URLSearchParams(window.location.search).get('trad
     <p>有資料想先給我看，直接寄到 <a href="mailto:dio3212@gmail.com">dio3212@gmail.com</a>。</p>
   </div>
 
-  <!-- SURVEY（2026-10-10：兩題同時顯示、都必答、一次送出）-->
+  <!-- SURVEY（2026-10-10：兩題同時顯示、都選填、一次送出）-->
   <div class="survey-section fade-up fade-up-d1" id="surveyBox">
-    <h3>幫我一個忙｜兩題都點一下就好</h3>
-    <p class="survey-sub">你的答案會幫我很大的忙。兩題都選好後，按最下面的「送出」。</p>
+    <h3>幫我一個忙｜點一下就好</h3>
+    <p class="survey-sub">你的答案會幫我很大的忙。兩題都可以選填，選好後按最下面的「送出」。（只答一題也可以）</p>
     <div id="surveyForm">
-      <div class="q-label">第 1 題｜你第一次是從哪裡知道東區德的？<span class="req">必答</span></div>
+      <div class="q-label">第 1 題｜你第一次是從哪裡知道東區德的？<span class="req">選填</span></div>
       <div class="survey-grid" id="surveyGrid">
         <button type="button" class="survey-btn" data-q="q1" data-answer="Threads" aria-pressed="false"><span class="icon">🧵</span>Threads</button>
         <button type="button" class="survey-btn" data-q="q1" data-answer="YouTube" aria-pressed="false"><span class="icon">🎬</span>YouTube</button>
@@ -458,7 +458,7 @@ window.dioGaPurchaseBackup(new URLSearchParams(window.location.search).get('trad
         <button type="button" class="survey-btn" data-q="q1" data-answer="ChatGPT / AI 問答" aria-pressed="false"><span class="icon">🤖</span>ChatGPT / AI 問答</button>
         <button type="button" class="survey-btn" data-q="q1" data-answer="其他" aria-pressed="false"><span class="icon">✨</span>其他</button>
       </div>
-      <div class="q-label">第 2 題｜這次決定購買前，哪一個幫你最多？<span class="req">必答</span></div>
+      <div class="q-label">第 2 題｜這次決定購買前，哪一個幫你最多？<span class="req">選填</span></div>
       <p class="survey-sub">可以跟第 1 題一樣，也可以不一樣。</p>
       <div class="survey-grid" id="assistGrid">
         <button type="button" class="survey-btn" data-q="q2" data-answer="部落格文章" aria-pressed="false"><span class="icon">📝</span>部落格文章</button>
@@ -546,9 +546,9 @@ function deliverSurvey(payload, cb, leaving) {
   } catch (e) { console.warn('fetch failed', e); finish(false); }
 }
 
-// ===== 第一題＋第二題：兩題同時顯示、都必答、一次送出（2026-10-10 改版）=====
+// ===== 第一題＋第二題：兩題同時顯示、都選填、一次送出（2026-10-10 改版）=====
 // 第 1 題＝第一次從哪裡知道東區德（payload 維持舊格式，寫「回應」分頁「答案」欄）；第 2 題＝這次購買前最有幫助（kind=purchase_assist，寫「購前助攻」分頁）。
-// 兩題都選了「送出」才亮；先送第 1 題，成功才送第 2 題；任一題失敗只重送沒成功的那題，已成功的不重送。
+// 兩題都是選填：至少選一題「送出」就亮，兩題並行送；任一題失敗只重送沒成功的那題，已成功的不重送。
 // 補充文字欄仍是選填，只跟著第 2 題送。兩題都選了卻沒按送出就離開頁面，pagehide 補送一次（sendBeacon，只保證交給瀏覽器）。
 (function () {
   var box = document.getElementById('surveyBox');
@@ -578,8 +578,10 @@ function deliverSurvey(payload, cb, leaving) {
   }
   if (sent.q1 && sent.q2) finishAll();
 
+  // 還有沒送出的答案（至少選了一題、且那題還沒送成功）才能按送出
+  function pending() { return (!!chosen.q1 && !sent.q1) || (!!chosen.q2 && !sent.q2); }
   function refresh() {
-    var ready = (sent.q1 || chosen.q1) && (sent.q2 || chosen.q2);
+    var ready = pending();
     send.disabled = !ready || state !== 'idle';
   }
 
@@ -595,7 +597,7 @@ function deliverSurvey(payload, cb, leaving) {
   }
 
   function sendQ1(leaving, next) {
-    if (sent.q1) return next(true);
+    if (sent.q1 || !chosen.q1) return next(true);
     var payload = {answer: chosen.q1, url_params: urlParams(), referrer: document.referrer || '', user_agent: navigator.userAgent, page: PAGE, timestamp: new Date().toISOString()};
     deliverSurvey(payload, function (ok, queued) {
       if (ok) { sent.q1 = true; if (key1 && !queued) { try { localStorage.setItem(key1, '1'); } catch (e) {} } }
@@ -603,7 +605,7 @@ function deliverSurvey(payload, cb, leaving) {
     }, leaving);
   }
   function sendQ2(leaving, next) {
-    if (sent.q2) return next(true);
+    if (sent.q2 || !chosen.q2) return next(true);
     var p = {kind: 'purchase_assist', page: PAGE, order_ref: ref(), survey_v: '3', user_agent: navigator.userAgent, assist_answer: chosen.q2};
     var v = (input.value || '').trim();
     if (v) p.assist_detail = v.slice(0, 300);
@@ -615,7 +617,7 @@ function deliverSurvey(payload, cb, leaving) {
 
   function submit(leaving) {
     if (state !== 'idle') return;
-    if (!((sent.q1 || chosen.q1) && (sent.q2 || chosen.q2))) return;
+    if (!pending()) return;
     state = 'sending';
     send.disabled = true;
     errEl.classList.remove('show');
@@ -656,12 +658,8 @@ function deliverSurvey(payload, cb, leaving) {
   send.addEventListener('click', function () { submit(false); });
   // 只掛 pagehide，不掛 visibilitychange：補充欄要人貼搜尋詞或文章網址，買家本來就會切到別的分頁去複製，
   // 把切分頁當成離開會把半填的答案送出並鎖死。
-  // 離頁補送：兩題都選了就整份送；只選了第 1 題也把第 1 題送出，避免必答門檻讓只答一題的人完全沒有紀錄
-  window.addEventListener('pagehide', function () {
-    if (state !== 'idle') return;
-    if ((sent.q1 || chosen.q1) && (sent.q2 || chosen.q2)) { submit(true); return; }
-    if (chosen.q1 && !sent.q1) { state = 'sending'; sendQ1(true, function () {}); }
-  });
+  // 離頁補送：選了還沒按送出的答案（一題或兩題）在離頁時送出一次（sendBeacon，只保證交給瀏覽器）
+  window.addEventListener('pagehide', function () { if (state === 'idle') submit(true); });
   refresh();
 })();
 </script>
