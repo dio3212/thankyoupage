@@ -28,6 +28,13 @@ const pages = [
     contentId: null,
     browserPurchase: false,
   },
+  {
+    // 脫單陪跑計畫：買過線上課／實體課可全額折抵，實付金額因人而異，同諮詢頁不在瀏覽器認金額
+    path: "vip/index.html",
+    pageName: "thank-you-vip",
+    contentId: null,
+    browserPurchase: false,
+  },
 ];
 
 // 三頁都必須有
@@ -95,7 +102,7 @@ for (const page of pages) {
 }
 
 // GA4 購買到站備援（2026-09-19，Codex 複審後改版）：三頁都要有；只能送非電商事件，絕不能再送原生 purchase
-for (const path of ["index.html", "inperson/index.html", "levelh/index.html", "consult/index.html"]) {
+for (const path of ["index.html", "inperson/index.html", "levelh/index.html", "consult/index.html", "vip/index.html"]) {
   const html = await readFile(path, "utf8");
   assert.equal(
     (html.match(/gtag\('event', 'purchase_backup_observed'/g) ?? []).length,
@@ -119,7 +126,7 @@ for (const path of ["index.html", "inperson/index.html", "levelh/index.html", "c
 }
 
 // 兩題問卷（2026-10-10 改版）：兩題同時顯示、都必答、同樣的按鈕、一次送出
-const ALL = ["index.html", "inperson/index.html", "levelh/index.html", "consult/index.html"];
+const ALL = ["index.html", "inperson/index.html", "levelh/index.html", "consult/index.html", "vip/index.html"];
 for (const path of ALL) {
   const html = await readFile(path, "utf8");
   const count = (s) => html.split(s).length - 1;

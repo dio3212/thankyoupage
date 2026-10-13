@@ -60,6 +60,8 @@ Static thank-you page
 ├── index.html                 # Online-course purchase confirmation
 ├── inperson/index.html        # In-person-course confirmation
 ├── levelh/index.html          # In-person humor & confidence course confirmation
+├── consult/index.html         # One-on-one consultation confirmation
+├── vip/index.html             # Coaching program (脫單陪跑計畫) confirmation
 ├── tests/validate-pages.mjs   # Dependency-free regression checks
 └── .github/workflows/         # Pull-request and push validation
 ```
