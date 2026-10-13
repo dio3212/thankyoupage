@@ -29,7 +29,7 @@ const pages = [
     browserPurchase: false,
   },
   {
-    // 脫單陪跑計畫：買過線上課／實體課可全額折抵，實付金額因人而異，同諮詢頁不在瀏覽器認金額
+    // 脫單陪跑計畫：瀏覽器端拿不到實付金額，同諮詢頁不在瀏覽器認金額，購買事件交給伺服器端 CAPI
     path: "vip/index.html",
     pageName: "thank-you-vip",
     contentId: null,

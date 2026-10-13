@@ -357,8 +357,8 @@ document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '863573241308280');
 fbq('track', 'PageView');
 // ⚠ 這頁刻意不發 Purchase（與線上課／實體課感謝頁不同，同諮詢頁做法）：
-// 脫單陪跑計畫原價 NT$39,600，買過線上課／實體課的學員可全額折抵，實付金額因人而異，
-// 瀏覽器端拿不到實付金額，寫死任一個都會讓 Meta 收到錯的 value。
+// 陪跑金額高、一年只有個位數訂單，瀏覽器端拿不到實付金額（優惠碼、分期都可能讓實付不等於標價），
+// 寫死 NT$39,600 一旦不準就會讓 Meta 收到錯的 value。
 // 伺服器端（Teachify webhook → CAPI，漏接時由 order_reconcile 補送）本來就會帶真實金額送 Purchase，
 // eventID=tradeNo，該送的已經送了。要在這裡補發，得先讓跳轉網址帶實付金額參數。
 </script>
